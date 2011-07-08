@@ -16,16 +16,18 @@ it's not necessarily easy.
 
 Quick Start
 ===========
-*Prequesities*
+###Prequesities
+
 * Python
 * Google Chrome web browser
 
-*Install M5 from git*
+###Install M5 from git
+
     git clone ...
     cd m5
     sudo python install.py
   
-*Create your first M5 app*
+###Create your first M5 app
     m5 create /path/to/new/application
     cd /path/to/new/application
     m5 server -launchsim
