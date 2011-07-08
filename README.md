@@ -16,24 +16,24 @@ it's not necessarily easy.
 
 Getting Started
 ===============
-1. Prequesities
+Step 1. Prequesities
 
 * Python
 * Google Chrome web browser
 
-2. Install M5 from git
+Step 2. Install M5 from git
 
     git clone ...
     or download a tarbar...
     cd m5
     sudo python install.py
   
-3. Create your first M5 app
+Step 3. Create your first M5 app
     m5 create /path/to/new/<application name>
     cd /path/to/new/<application name>
     m5 server -launchsim
   
-4. Have a look around
+Step 4. Have a look around
 
 Look at the app.html file generated in your new directory. It contains a working template
 for a new application. This application has a nav bar, a settings page, and shows a simple
@@ -46,7 +46,7 @@ You can see all the examples in action by running
 
 Use `m5 help` to get help on the m5 control script.
 
-5. Deploy your creation
+Step 5. Deploy your creation
 
 First, gather all your info and assets and fill out your TPS forms...Haha! Just kidding.
 Try this instead:
