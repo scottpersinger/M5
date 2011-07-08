@@ -21,19 +21,20 @@ Step 1. Prequesities
 * Python
 * Google Chrome web browser
 
-Step 2. Install M5 from git
+__Step 2__. Install M5 from git
 
     git clone ...
     or download a tarbar...
     cd m5
     sudo python install.py
   
-Step 3. Create your first M5 app
+__Step 3__. Create your first M5 app
+
     m5 create /path/to/new/<application name>
     cd /path/to/new/<application name>
     m5 server -launchsim
   
-Step 4. Have a look around
+__Step 4__. Have a look around
 
 Look at the app.html file generated in your new directory. It contains a working template
 for a new application. This application has a nav bar, a settings page, and shows a simple
@@ -42,13 +43,14 @@ are documented in the app.html file. If you want to get more ideas, look in the 
 directory where you cloned M5.
 
 You can see all the examples in action by running
+
     m5 server -examples -launchsim
 
-Use `m5 help` to get help on the m5 control script.
+Use `m5 help` to get help on the __m5__ control script.
 
-Step 5. Deploy your creation
+__Step 5__. Deploy your creation
 
-First, gather all your info and assets and fill out your TPS forms...Haha! Just kidding.
+First, gather all your assets so you create the cover sheet for your TPS report...Haha! Just kidding.
 Try this instead:
 
     cd /path/to/your/app
