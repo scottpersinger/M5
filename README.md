@@ -16,7 +16,7 @@ it's not necessarily easy.
 
 Getting Started
 ===============
-Step 1. Prequesities
+__Step 1__. Prequesities
 
 * Python
 * Google Chrome web browser
@@ -37,12 +37,12 @@ __Step 3__. Create your first M5 app
 __Step 4__. Have a look around
 
 Look at the app.html file generated in your new directory. It contains a working template
-for a new application. This application has a nav bar, a settings page, and shows a simple
-list of items. You can tap each item to see some detail. The various pieces of the app
+for a new application. This application contains a nav bar, a settings page, and shows a simple
+list of items you can tap for more detail. The various pieces of the app
 are documented in the app.html file. If you want to get more ideas, look in the `examples`
 directory where you cloned M5.
 
-You can see all the examples in action by running
+You can see also see the examples in action by running
 
     m5 server -examples -launchsim
 
@@ -50,7 +50,7 @@ Use `m5 help` to get help on the __m5__ control script.
 
 __Step 5__. Deploy your creation
 
-First, gather all your assets so you create the cover sheet for your TPS report...Haha! Just kidding.
+First, you'll need to gather your SSN, EIN, and VIN numbers for the cover sheet for your TPS report...Haha! Just kidding.
 Try this instead:
 
     cd /path/to/your/app
@@ -70,20 +70,33 @@ The M5 stack
 
 When your mobile app is running, the technology stack looks like:
 
-  WebKit browser (local storage)
-  M5 package manager
-  jQuery
-  jQTouch
-   jQTouch extensions
-  M5 modules
-  ** your application code
+    WebKit browser (local storage)
+    M5 package manager
+    jQuery
+    jQTouch
+    M5 modules
+    ** your application code
   
 M5 also provides a local development environment:
 
-  M5 web server (python)
-  Chrome browser
-    -> Mobile simulator
-    -> your app
+    M5 web server (python)
+    Chrome browser
+        -> Mobile simulator
+        -> your app
 
 
-  
+Notes on HTML Apps on iPhone
+============================
+Following are the special head tags that iOS recognizes to give your app special treatment
+when bookmarked to the home page:
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+The "status bar" is the thin top-most bar with the clock and battery indicator.
+
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="apple-touch-icon" href="icon.png" />
+
+<link rel="apple-touch-startup-image" href="home.png" />

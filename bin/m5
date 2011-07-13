@@ -1,0 +1,65 @@
+#!/usr/bin/env python
+import getopt, sys
+
+def print_help():
+    print "Usage: m5 <command> <options>\n"
+    print "m5 create <path> - Create new app at path"
+    print "m5 server [--examples --launchsim] - Run the local web server for the current app"
+    print "m5 compile - Expands dynamic entries in your app.html file to generate index.html"
+    print "m5 deploy [--scratchpad] - Deploy the current app"
+    
+  
+def create_app():
+    # Copy app template
+    print "Create new app..."
+    pass
+
+def run_server(example = False, launchsim = False):
+    print "Running web server..."
+    pass
+    
+def deploy_app():
+    print "Deploying app..."
+    pass
+    
+def compile_app():
+    print "Compiling app"
+        
+def main():
+    if len(sys.argv) < 2:
+        print_help()
+        sys.exit(2)
+
+    command = sys.argv[1]
+    try:
+        opts, args = getopt.getopt(sys.argv[2:], "hel", ["help", "examples","launchsim"])
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print str(err) # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    examples = False
+    launchsim = False
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o in ("-e", "--examples"):
+            examples = True
+        elif o in ("-l", "--launchsim"):
+            launchsim = True
+        else:
+            assert False, "unknown option: " + o
+
+    if command == "server":
+        run_server(example = examples, launchsim = launchsim)
+    elif command == "create":
+        create_app()
+    elif command == "deploy":
+        deploy_app()
+    else:
+        print "Error, unknown command: " + command
+        sys.exit(2)
+
+if __name__ == "__main__":
+    main()
