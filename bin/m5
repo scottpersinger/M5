@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import getopt, sys
+import server
 
 def print_help():
     print "Usage: m5 <command> <options>\n"
@@ -16,7 +17,7 @@ def create_app():
 
 def run_server(example = False, launchsim = False):
     print "Running web server..."
-    pass
+    server.start_m5server()
     
 def deploy_app():
     print "Deploying app..."

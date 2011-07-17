@@ -4,6 +4,8 @@ import sys
 import re
 import json
 import glob
+import random
+
 from compiler import *
 
 # A special purpose web server for serving M5 apps locally. Basically it's just serving
@@ -12,12 +14,17 @@ from compiler import *
 # - Dynamically expands your app.html file to expand @require statements and configure the app manifest.
 # - Dynamically generates the cache.manifgest file for offline support.
 
+def start_m5server():
+    cherrypy.quickstart(M5Server())
+    
 class M5Server:
     DEFAULT_APP_NAME = "app.html"
     
     M5_DIR = os.path.join(os.path.dirname(sys.argv[0]), "..")
     M5_LIB_DIR = os.path.join(M5_DIR, "lib")
     JQTOUCH_DIR = os.path.join(M5_DIR, "jqtouch")
+    command_queues = {}
+    response_queues = {}
     
     @cherrypy.expose
     def index(self):
@@ -41,6 +48,59 @@ class M5Server:
     def file__(self, name):
         self.content_type("text/plain")
         return open(name).read()
+        
+    @cherrypy.expose
+    def save__(self, name, body):
+        f = open(name, 'w')
+        f.write(body)
+        f.close()
+        return "OK"
+
+    @cherrypy.expose
+    def remote_connect__(self, name):
+        # generate a unique key to identify connections
+        key = name + "." + str(random.randint(0, 99999))
+        self.command_queues[key] = []
+        self.response_queues[key] = []
+        return json.dumps({'key': key})
+        
+    @cherrypy.expose
+    def send_command__(self, key, command):
+        # Send a command to all other listeners
+        for k, queue in self.command_queues.iteritems():
+            if k != key:
+                queue.append(command)
+        return "OK"
+        
+    @cherrypy.expose
+    def get_command__(self, key):
+        self.content_type("text/plain")
+        # Return any queued commands to a client (the mobile app itself)
+        if len(self.command_queues[key]) > 0:
+            cmd = self.command_queues[key].pop()
+            print "*********** SENDING COMMAND: " + cmd
+            return cmd
+        else:
+            return ""
+            
+    @cherrypy.expose
+    def send_response__(self, key, response):
+        # Send a response to all other listeners
+        print "*********** RECEIVED RESPONSE: " + response
+        for k, queue in self.response_queues.iteritems():
+            if k != key:
+                queue.append(response)
+        return "OK"
+        
+    @cherrypy.expose
+    def get_response__(self, key):
+        self.content_type("text/plain")
+        if len(self.response_queues[key]) > 0:
+            res = self.response_queues[key].pop()
+            print "*********** RECEIVED RESPONSE: " + res
+            return res
+        else:
+            return ""
         
     @cherrypy.expose
     @cherrypy.popargs('path1', 'path2', 'path3', 'file')
@@ -87,4 +147,5 @@ class M5Server:
         else:
             return ['.', path1]
             
-cherrypy.quickstart(M5Server())
+if __name__ == "__main__":
+    cherrypy.quickstart(M5Server())

@@ -1,0 +1,13 @@
+stuff
+Websocket opened
+Websocket: ws_location : ws://localhost:12345/do<br />ws_origin : http://localhost:8080<br />ws_protocol : None<br />ws_resource : /do<br />
+Websocket: Websocket opened
+Websocket: Websocket: Websocket opened
+hi there
+Websocket: hi there
+Websocket: Websocket: hi there
+Websocket opened
+Websocket opened
+Websocket opened
+[hand] console.log("This is the other window")
+[hand] window.location.reload()
