@@ -9,6 +9,8 @@ def test():
     return c.compile("../templates/app.html")
     
 class M5Compiler:
+    opt_sim = True
+    
     path_lookups = {
         'jquery' : "jqtouch/jquery-1.5.1.min.js",
         'iscroll' : "jqtouch/extensions/jqt.bars/iscroll-min.js",
@@ -17,7 +19,9 @@ class M5Compiler:
         'm5.simulator': ['m5/m5.simulator.js', 'm5/m5.simulator.css']
     }
 
-    def compile(self, file_or_io):
+    def compile(self, file_or_io, include_sim=True):
+        self.opt_sim = include_sim
+        
         result = []
         f = open(file_or_io)
         inside_comment = False
@@ -43,6 +47,8 @@ class M5Compiler:
         return "\n".join(result)
 
     def script_tags(self, files):
+        if files == None:
+            return ""
         if type(files) != str:
             result = ""
             for f in files:
@@ -56,9 +62,15 @@ class M5Compiler:
                 
     def expand_require(self, modname):
         if modname in self.path_lookups:
-            return self.path_lookups[modname]
+            if not re.search('m5\.simulator',modname) or self.opt_sim:
+                return self.path_lookups[modname]
+            else:
+                return None
         elif re.match("m5\.",modname):
-            return "m5/" + modname + ".js"
+            if not re.search('\.simulator',modname) or self.opt_sim:
+                return "m5/" + modname + ".js"
+            else:
+                return None
         elif re.match("jqtouch", modname):
             m = re.match("jqtouch\(theme:(\w+)\)?",modname)
             theme = m.group(1) or "default"

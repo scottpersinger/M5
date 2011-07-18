@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 import getopt, sys
 import server
+import glob
+import urllib2_file
+import urllib2
+
+from m5compiler import *
 
 def print_help():
     print "Usage: m5 <command> <options>\n"
@@ -21,10 +26,23 @@ def run_server(example = False, launchsim = False):
     
 def deploy_app():
     print "Deploying app..."
-    pass
+    # For now we just upload everything in a huge mime message
+    files = glob.glob("*") + glob.glob("*/*")
+    app_name = os.path.basename(os.getcwd())
+    data = {'__app_name' : app_name}
+    for f in files:
+        if os.path.isfile(f):
+            data[f] = open(f)
+    response = urllib2.urlopen("http://localhost:8000/app/" + app_name + "/upload", data)
+    print response
     
 def compile_app():
-    print "Compiling app"
+    name = "app.m5.html"
+    print "Compiling " + name + "..."
+    f = open(name, 'w')
+    f.write(M5Compiler().compile("app.html", include_sim=False))
+    f.close()
+    print "done."
         
 def main():
     if len(sys.argv) < 2:
@@ -58,6 +76,8 @@ def main():
         create_app()
     elif command == "deploy":
         deploy_app()
+    elif command == "compile":
+        compile_app()
     else:
         print "Error, unknown command: " + command
         sys.exit(2)

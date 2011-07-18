@@ -84,6 +84,12 @@ M5 also provides a local development environment:
         -> Mobile simulator
         -> your app
 
+Python server installation
+==========================
+wget http://download.cherrypy.org/cherrypy/3.2.1/CherryPy-3.2.1.tar.gz
+tar xvsf CherryPy-3.2.1.tar.gz
+cd CherryPy-3.2.1
+sudo python setup.py install
 
 Notes on HTML Apps on iPhone
 ============================

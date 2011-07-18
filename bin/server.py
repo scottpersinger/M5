@@ -8,6 +8,8 @@ import random
 
 from compiler import *
 
+print "This dir is: " + os.path.join(os.path.dirname(__file__))
+
 # A special purpose web server for serving M5 apps locally. Basically it's just serving
 # files. But with these special features:
 #

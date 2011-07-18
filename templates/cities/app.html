@@ -96,7 +96,9 @@
                   <a class="button back" href="#">Back</a>
               </div>
               <div style="display:block">
-                <ul class="rounded" id="city-details" style="padding:6px"></ul>
+                <ul class="rounded">
+                  <li id="city-details" style="padding:6px"></li>
+                </ul>
               </div>
             </div>
               
@@ -139,8 +141,10 @@
             $('#details').bind('pageAnimationStart', function() {
               var tappedElt = $(this).data('referrer');
               var cityName = $(tappedElt).text().trim();
-              var details = CITY_DETAILS[cityName];
-              $('#city-details').html(details);
+              $.get('data/city_details.json', function(detail_set) {
+                var details = detail_set[cityName];
+                $('#city-details').html(details);
+              }, 'json');
             });
 
             var CITY_DETAILS = {
