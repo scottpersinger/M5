@@ -1,28 +1,54 @@
 #!/usr/bin/env python
 import getopt, sys
-import server
 import glob
 import urllib2_file
 import urllib2
+import shutil
+import webbrowser
+from threading import Timer
 
 from m5compiler import *
+import m5server
+
+M5_DIR = os.path.join(os.path.dirname(__file__), "..")
 
 def print_help():
     print "Usage: m5 <command> <options>\n"
     print "m5 create <path> - Create new app at path"
-    print "m5 server [--examples --launchsim] - Run the local web server for the current app"
+    print "m5 server [-e <environment> --examples --launchsim --nb] - Run the local web server for the current app"
     print "m5 compile - Expands dynamic entries in your app.html file to generate index.html"
     print "m5 deploy [--scratchpad] - Deploy the current app"
+    print "m5 tutorial - Start the tutorial server"
     
   
-def create_app():
+def create_app(path):
     # Copy app template
-    print "Create new app..."
-    pass
+    if os.path.exists(path):
+        print "Error: path " + path + " already exists"
+        exit()
+    else:
+        print "Creating new app " + path + "..."
+        shutil.copytree(os.path.join(M5_DIR, "templates", "cities"), path)
+        print "  -> " + path
+        for f in glob.glob(os.path.join(M5_DIR, "templates", "*.js")):
+            shutil.copyfile(f, os.path.join(path, os.path.basename(f)))
+            print "  -> " + os.path.basename(f)
+        print "done"
 
-def run_server(example = False, launchsim = False):
-    print "Running web server..."
-    server.start_m5server()
+def run_server(example = False, launchsim = False, environment="development",open_browser=False):
+    print "Running M5 web server with " + environment + " environment ..."
+    if open_browser:
+        webbrowser.open("http://localhost:8000")
+    m5server.start_m5server(M5_DIR, environment=environment, include_sim=launchsim)
+
+def open_tutorial_browser():
+    webbrowser.open("http://localhost:7777")
+        
+def run_tutorial_server(open_browser=True):
+    print "Serving M5 tutorial pages..."
+    if open_browser:
+        Timer(1.0, open_tutorial_browser).start()
+    m5server.start_tutorial(os.path.join(M5_DIR, "docs", "tutorial"))
     
 def deploy_app():
     print "Deploying app..."
@@ -51,29 +77,43 @@ def main():
 
     command = sys.argv[1]
     try:
-        opts, args = getopt.getopt(sys.argv[2:], "hel", ["help", "examples","launchsim"])
+        opts, args = getopt.getopt(sys.argv[2:], "he:l", ["help", "examples","launchsim","nb"])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
-        usage()
+        print_help()
         sys.exit(2)
     examples = False
     launchsim = False
-    for o, a in opts:
+    environment = "development"
+    open_browser = True
+    for o, arg in opts:
         if o in ("-h", "--help"):
             usage()
             sys.exit()
-        elif o in ("-e", "--examples"):
+        elif o == "--examples":
             examples = True
         elif o in ("-l", "--launchsim"):
             launchsim = True
+        elif o == "--nb":
+            open_browser = False
+        elif o in ("-e"):
+            environment = arg
+            if not environment in ("development","production","testing"):
+                print "Error, unknown environment: " + arg
+                environment = "development"
         else:
             assert False, "unknown option: " + o
 
-    if command == "server":
-        run_server(example = examples, launchsim = launchsim)
+    if command == "help":
+        print_help();
+        sys.exit(0)
+    elif command == "tutorial":
+        run_tutorial_server(open_browser=open_browser);
+    elif command == "server":
+        run_server(example = examples, launchsim = launchsim, environment = environment, open_browser=open_browser)
     elif command == "create":
-        create_app()
+        create_app(sys.argv[2])
     elif command == "deploy":
         deploy_app()
     elif command == "compile":

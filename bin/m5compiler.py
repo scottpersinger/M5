@@ -10,6 +10,7 @@ def test():
     
 class M5Compiler:
     opt_sim = True
+    env = "production"
     
     path_lookups = {
         'jquery' : "jqtouch/jquery-1.5.1.min.js",
@@ -19,8 +20,9 @@ class M5Compiler:
         'm5.simulator': ['m5/m5.simulator.js', 'm5/m5.simulator.css']
     }
 
-    def compile(self, file_or_io, include_sim=True):
+    def compile(self, file_or_io, include_sim=True, environment="production"):
         self.opt_sim = include_sim
+        self.env = environment
         
         result = []
         f = open(file_or_io)
@@ -66,6 +68,8 @@ class M5Compiler:
                 return self.path_lookups[modname]
             else:
                 return None
+        elif re.match("m5\.env",modname):
+            return "m5.env." + self.env + ".js"
         elif re.match("m5\.",modname):
             if not re.search('\.simulator',modname) or self.opt_sim:
                 return "m5/" + modname + ".js"
@@ -74,7 +78,6 @@ class M5Compiler:
         elif re.match("jqtouch", modname):
             m = re.match("jqtouch\(theme:(\w+)\)?",modname)
             theme = m.group(1) or "default"
-            print theme
             return ["jqtouch/jqtouch.js","jqtouch/jqtouch.css", ("jqtouch/themes/" + theme + "/theme.css")] 
         else:
             return (modname + ".js")

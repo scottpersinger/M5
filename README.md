@@ -32,7 +32,7 @@ __Step 3__. Create your first M5 app
 
     m5 create /path/to/new/<application name>
     cd /path/to/new/<application name>
-    m5 server -launchsim
+    m5 server --launchsim
   
 __Step 4__. Have a look around
 
@@ -44,7 +44,7 @@ directory where you cloned M5.
 
 You can see also see the examples in action by running
 
-    m5 server -examples -launchsim
+    m5 server --examples -launchsim
 
 Use `m5 help` to get help on the __m5__ control script.
 
@@ -54,7 +54,7 @@ First, you'll need to gather your SSN, EIN, and VIN numbers for the cover sheet 
 Try this instead:
 
     cd /path/to/your/app
-    m5 deploy -sratchpad
+    m5 deploy --sratchpad
         ...deploying...
         App deployed at: <app name>.scratchpad.h5apps.org
 
@@ -63,6 +63,15 @@ Bookmark it to your homescreen so you can run it full screen.
 
 Congrats! Your mobile app is live!   
 
+The m5 command
+==============
+
+    m5 help - show help message
+    m5 create <path to new app> - Create a new directory containing a new M5 app template
+    m5 server - Run the local m5 server to serve the app in the current directory
+    m5 deploy - Deploy the current app to the cloud
+    m5 build - Generate production ready files for the current app into a directory
+    m5 tutorial - Open the M5 tutorial in a web browser
 
 
 The M5 stack

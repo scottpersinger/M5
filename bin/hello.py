@@ -1,8 +1,10 @@
 import cherrypy
 
-class M5WebServer:
-    def index(self):
-        return "Hello world!"
-    index.exposed = True
+#global DIR
+DIR = "foobar"
 
-cherrypy.quickstart(HelloWorld())
+def testme():
+    global DIR
+    print "Dir is: " + DIR
+    
+testme()

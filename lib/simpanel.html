@@ -144,7 +144,7 @@
         function save_editor(fname) {
           if (editor_file) {
             editor_message("Saving...", true);
-            $.post('save__', {name: fname, body: $('#content').val()});
+            $.post('save__/' + fname, {body: $('#content').val()});
           }
         }
         
@@ -163,7 +163,7 @@
             if (fname.match(/(\.png|\.jpe?g|\.gif)$/)) {
               show_image(fname);
             } else {
-              $.get('file__', {name: fname}, function(result) {
+              $.get('file__/' + fname, function(result) {
                 editor_file = fname;
                 show_text(result);
               }, 'text');
@@ -224,7 +224,7 @@
             <div style="border:1px solid #000">> <input id="console_entry" type="text" style="width:90%;border:none"></input></div>
           </div>
           <div id="editor" class="panel active" style="position:absolute;top:0;left:0;right:0;bottom:0">
-            <div id="filelist" style="float:left;width:100px;font-size:12px;border-right:1px solid #222"></div>
+            <div id="filelist" style="float:left;width:100px;height:100%;font-size:12px;border-right:1px solid #222"></div>
             <div style="margin-left:104px;height:100%">
               <div class="toolbar" style="height:30px;border-bottom:1px solid #666;padding-top:4px">
                 <a id="save"><img src="m5/assets/disk-black.png" /></a>

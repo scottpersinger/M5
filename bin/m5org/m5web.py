@@ -5,20 +5,7 @@ import pdb
 
 sys.path.append("../")
 from m5compiler import M5Compiler
-
-class M5App:
-    def __init__(self,name):
-        self.name = name;
-        self.index_name = 'app.html'
-        self.compiled_name = 'app.m5.html'
-        
-    def file_path(self, path):
-        return root_path("apps", self.name, path)
-
-    def mkdir(self):
-        if not os.path.exists(root_path("apps", self.name)):
-            os.mkdir(root_path("apps", self.name))
-        
+from m5app import M5App
         
 def root_path(*paths):
     return os.path.join(os.path.dirname(__file__), *paths)
@@ -38,7 +25,7 @@ def jqtouch_dir():
 
     
 def load_app(name):
-    return M5App(name)
+    return M5App(name, os.path.dirname(__file__))
     
 @route('/')
 def index():
