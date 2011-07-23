@@ -13,11 +13,11 @@ class M5Compiler:
     env = "production"
     
     path_lookups = {
-        'jquery' : "jqtouch/jquery-1.5.1.min.js",
-        'iscroll' : "jqtouch/extensions/jqt.bars/iscroll-min.js",
-        'jqt.bars' : ['jqtouch/extensions/jqt.bars/jqt.bars.js', 'jqtouch/extensions/jqt.bars/jqt.bars.css'],
-        'jqt.offline' : 'jqtouch/extensions/jqt.offline.js',
-        'm5.simulator': ['m5/m5.simulator.js', 'm5/m5.simulator.css']
+        'jquery' : "lib/jqtouch/jquery-1.5.1.min.js",
+        'iscroll' : "lib/jqtouch/extensions/jqt.bars/iscroll-min.js",
+        'jqt.bars' : ['lib/jqtouch/extensions/jqt.bars/jqt.bars.js', 'lib/jqtouch/extensions/jqt.bars/jqt.bars.css'],
+        'jqt.offline' : 'lib/jqtouch/extensions/jqt.offline.js',
+        'm5.simulator': ['lib/m5/m5.simulator.js', 'lib/m5/m5.simulator.css']
     }
 
     def compile(self, file_or_io, include_sim=True, environment="production"):
@@ -72,13 +72,13 @@ class M5Compiler:
             return "m5.env." + self.env + ".js"
         elif re.match("m5\.",modname):
             if not re.search('\.simulator',modname) or self.opt_sim:
-                return "m5/" + modname + ".js"
+                return "lib/m5/" + modname + ".js"
             else:
                 return None
         elif re.match("jqtouch", modname):
             m = re.match("jqtouch\(theme:(\w+)\)?",modname)
             theme = m.group(1) or "default"
-            return ["jqtouch/jqtouch.js","jqtouch/jqtouch.css", ("jqtouch/themes/" + theme + "/theme.css")] 
+            return ["lib/jqtouch/jqtouch.js","lib/jqtouch/jqtouch.css", ("lib/jqtouch/themes/" + theme + "/theme.css")] 
         else:
             return (modname + ".js")
             

@@ -28,11 +28,22 @@ def create_app(path):
         exit()
     else:
         print "Creating new app " + path + "..."
+        app_name = os.path.basename(path)
         shutil.copytree(os.path.join(M5_DIR, "templates", "cities"), path)
         print "  -> " + path
         for f in glob.glob(os.path.join(M5_DIR, "templates", "*.js")):
             shutil.copyfile(f, os.path.join(path, os.path.basename(f)))
+            if re.search("m5\.env\.development\.js", f):
+                envf = open(os.path.join(path, os.path.basename(f)), 'a')
+                envf.write("M5.settings.app_name = '" + app_name + "'\n");
+                envf.close()
             print "  -> " + os.path.basename(f)
+        manifest = open(os.path.join(M5_DIR, "templates", "manifest.json")).read()
+        manifest = re.sub("%%NAME%%", app_name, manifest)
+        f = open(os.path.join(path, "manifest.json"), "w")
+        f.write(manifest)
+        f.close
+        print "  -> manifest.json"
         print "done"
 
 def run_server(example = False, launchsim = False, environment="development",open_browser=False):

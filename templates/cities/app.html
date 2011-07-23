@@ -14,6 +14,7 @@
             @require jquery
             @require m5.boot, m5.env, m5.support
             @require m5.simplestorage
+            @require m5.remote_console
             @require m5.simulator
             
             @require jqtouch(theme:apple)
@@ -28,10 +29,10 @@
         
         <script type="text/javascript" charset="utf-8">
             var jQT = new $.jQTouch({
-                icon: 'gclogo.png',
-                icon4: 'gclogo4.png',
+                icon: 'assets/gclogo.png',
+                icon4: 'assets/gclogo4.png',
                 addGlossToIcon: true,
-                startupScreen: 'gc_startup.png',
+                startupScreen: 'assets/gc_startup.png',
                 statusBar: 'black',
                 preloadImages: [M5.jqtouch_images()],
                 useFastTouch: true    
@@ -110,7 +111,8 @@
                 </div>
                 <div>
                   <ul class="rounded">
-                    <li id="city-bio"></li>
+                    <li id="app-name"></li>
+                    <li id="user-agent"></li>
                   </ul>
                 </div>
             </div>
@@ -146,6 +148,9 @@
                 $('#city-details').html(details);
               }, 'json');
             });
+            
+            $('#app-name').html("APP: " + M5.settings.app_name);
+            $('#user-agent').html("UA: " + navigator.userAgent);
           });
           
         </script>
