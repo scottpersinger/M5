@@ -84,7 +84,7 @@ def app_upload(app_name):
         upfile = request.files.get(f).file
         print " --> " + f
         updir = os.path.dirname(f)
-        if updir != '':
+        if updir != '' and not os.path.exists(app.file_path(updir)):
             os.makedirs(app.file_path(updir))
         outf = open(app.file_path(f), "w")
         outf.write(upfile.read())

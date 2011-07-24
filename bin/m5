@@ -70,7 +70,7 @@ def deploy_app():
     for f in files:
         if os.path.isfile(f):
             data[f] = open(f)
-    response = urllib2.urlopen("http://localhost:8000/app/" + app_name + "/upload", data)
+    response = urllib2.urlopen("http://m5apps.org/app/" + app_name + "/upload", data)
     print response
     
 def compile_app():
