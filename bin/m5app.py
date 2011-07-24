@@ -29,7 +29,7 @@ class M5App:
     def mkdir(self):
         if self.container:
             if not os.path.exists(self.root_path(self.container, self.name)):
-                os.mkdir(self.root_path(container, self.name))
+                os.mkdir(self.root_path(self.container, self.name))
         
     def load_manifest(self,path):
         f = open(path, 'r')
