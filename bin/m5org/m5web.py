@@ -25,7 +25,7 @@ def jqtouch_dir():
 
     
 def load_app(name):
-    return M5App(name, os.path.dirname(__file__))
+    return M5App(name, os.path.dirname(__file__), container="apps")
     
 @route('/')
 def index():
