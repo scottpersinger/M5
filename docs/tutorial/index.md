@@ -4,10 +4,9 @@ M5 Mobile Toolkit
 M5 attempts to make building mobile applications as easy as possible. The basic components
 of M5 include:
 
-* A local web server supporting 'development' and 'production' modes to serve your app
-* Browser-based emulator which allows you to test and refine your app easily on the desktop
 * A basic mobile UI framework - currently jQuery plus jQTouch - for building your application UI
 * Javascript support modules for HTML5 features like local storage
+* Browser-based simulator which allows you to test and refine your app easily on the desktop
 * A free cloud service with API endpoints that make it possible to build "server-less" apps
     
 Creating your app
@@ -21,8 +20,8 @@ This creates a skeleton for your new app called 'testapp'. Now cd into 'testapp'
         m5 server --launchsim
 
 This starts the local web server, serving your new app, and opens a browser window to your app.
-You see your app running in the "simulator". This is really just an image of phone with your
-app frame centered inside. (See more info on [the m5 command](m5_command.md).)
+You see your app running in the "simulator". This is really just an image of a phone with your
+app frame centered inside. (See more info on [the m5 command](m5_command.md) or [the simulator](sim_console.md).)
 
 However, you also see on the right side the simulator console. We'll get to this in a minute.
 The skeleton app has a few components:
@@ -35,7 +34,7 @@ The skeleton app has a few components:
 It's a good idea to walk through the code of the skeleton app to see how things work. You
 can do that right here. Just click on the 'Editor' tab in the simulator console. This
 will show you a list of files that make up the app. Click the file *app.html*. 
-(See [the simulator](sim_comsole.md) for more on the simulator).
+(See [the simulator](sim_console.md) for more on the simulator).
 
 Now you can see the source code for the app. The HTML and JS for the app is all contained 
 entirely in this one file. The basic HTML structure for the app looks like this:

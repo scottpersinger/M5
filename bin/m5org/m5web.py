@@ -1,7 +1,10 @@
 from bottle import *
+import os
 import os.path
 import glob
 import pdb
+import tarfile
+import shutil
 
 sys.path.append("../")
 from m5compiler import M5Compiler
@@ -58,52 +61,77 @@ def app_root(name):
 def app_run(app_name):
     # Load app manifest
     app = load_app(app_name)
-    index_name = app.index_name
-    compiled_name = app.compiled_name
+    index_name = app.file_path(app.index_name)
+    compiled_name = app.file_path(app.compiled_name)
     
-    if not os.path.exists(app.file_path(compiled_name)) or \
-        (os.path.getmtime(app.file_path(index_name)) > os.path.getmtime(app.file_path(compiled_name))):
+    if not os.path.exists(compiled_name) or \
+        (os.path.exists(index_name) and os.path.getmtime(index_name) > os.path.getmtime(compiled_name)):
         # Need to recompile the app
         print "Recompiling " + index_name
-        f = open(app.file_path(compiled_name), 'w')
-        f.write(M5Compiler().compile(app.file_path(index_name), include_sim=False))
+        f = open(compiled_name, 'w')
+        f.write(M5Compiler().compile(index_name, include_sim=False))
         f.close()
         
-    return static_file("app.m5.html", root=root_path("apps/" + app_name))
+    return static_file(app.compiled_name, root=root_path("apps/" + app_name))
 
 @route ("/app/:app_name/favicon.ico")
 def app_favicon(app_name):
     abort(204, None)
 
-@post ("/app/:app_name/upload")
+@put ("/app/:app_name/upload")
 def app_upload(app_name):
     app = load_app(app_name)
+    if os.path.exists(root_path("apps", app_name)):
+        shutil.rmtree(root_path("apps", app_name))
+    
     app.mkdir()
-    print "Receiving upload for app: " + app_name
-    for f in request.files.keys():
-        upfile = request.files.get(f).file
-        print " --> " + f
-        updir = os.path.dirname(f)
-        if updir != '' and not os.path.exists(app.file_path(updir)):
-            os.makedirs(app.file_path(updir))
-        outf = open(app.file_path(f), "w")
-        outf.write(upfile.read())
+    content_len = request.headers['Content-Length']
+    
+    print "Receiving upload for app: " + app_name + ", length: " + str(content_len)
+    
+    tarfname = root_path("apps", app_name + ".tar")
+    outf = open(tarfname, "wb")
+    putfile = request.body
+    chunk = putfile.read(1024)
+    read_len = 0
+    while read_len < content_len:
+        outf.write(chunk)
+        read_len + len(chunk)
+        print "Writing chunk..., saw " + str(read_len) + " bytes"
+        chunk = putfile.read(1024)
+        if not chunk:
+            break
+    outf.flush()
+    outf.close()
+
+    tar = tarfile.open(tarfname, "r")
+    for tf in tar:
+        outfname = app.file_path(tf.name)
+        if re.match("\..+$",os.path.basename(outfname)):
+            continue
+        print " --> " + outfname
+        app.add_file(tf.name)
+        if not os.path.exists(os.path.dirname(outfname)):
+            os.makedirs(os.path.dirname(outfname))
+        outf = open(outfname, "w")
+        outf.write(tar.extractfile(tf.name).read());
         outf.close()
-        
+    tar.close()
+    os.remove(tarfname)
+    
+    outf = open(app.file_path(app.manifest_name), "w")
+    app.cache_counter += 1
+    outf.write(app.generate_cache_manifest())
+    outf.close()
+    
     return "Upload received"
         
     
 @route ("/app/:app_name/:path#.+#")
 def app_asset(app_name, path):
-    last_parts = "/".join(path.split("/")[1:])
-    last_path, fname = os.path.split(last_parts)
-
-    if re.match("^m5/", path):
-        return static_file(fname, root=os.path.join(m5_lib_dir(), last_path))
-    elif re.match("^jqtouch/", path):
-        return static_file(fname, root=os.path.join(jqtouch_dir(), last_path))
-    else:
-        return static_file(fname, root=root_path("apps/" + app_name + "/" + path))
+    if re.search("cache.manifest", path):
+        response.content_type = "text/cache-manifest"
+    return static_file(os.path.basename(path), root=root_path("apps/" + app_name + "/" + os.path.dirname(path)))
         
 
 

@@ -143,7 +143,7 @@
             $('#details').bind('pageAnimationStart', function() {
               var tappedElt = $(this).data('referrer');
               var cityName = $(tappedElt).text().trim();
-              $.get('data/city_details.json?' + Math.random(999), function(detail_set) {
+              $.get('data/city_details.json', function(detail_set) {
                 var details = detail_set[cityName];
                 $('#city-details').html(details);
               }, 'json');

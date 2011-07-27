@@ -29,6 +29,9 @@ class M5Compiler:
         inside_comment = False
         buffered = []
         for line in f:
+            if re.search("<html",line):
+                result.append(re.sub("<html.*?>", "<html manifest=\"cache.manifest\">", line))
+                continue
             if re.search("<!--",line):
                 inside_comment = True
             m = re.search("@require (.*)",line)
@@ -71,7 +74,7 @@ class M5Compiler:
         elif re.match("m5\.env",modname):
             return "m5.env." + self.env + ".js"
         elif re.match("m5\.",modname):
-            if not re.search('\.simulator',modname) or self.opt_sim:
+            if (not re.search('\.simulator',modname) or self.opt_sim) and (not re.search('\.remote_console',modname)):
                 return "lib/m5/" + modname + ".js"
             else:
                 return None

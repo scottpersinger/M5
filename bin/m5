@@ -3,14 +3,24 @@ import getopt, sys
 import glob
 import urllib2_file
 import urllib2
+import httplib
 import shutil
 import webbrowser
 from threading import Timer
+import tarfile
+#import MultipartPostHandler
+from MultiPartForm import MultiPartForm
+import codecs
 
 from m5compiler import *
 import m5server
+from m5app import M5App
 
 M5_DIR = os.path.join(os.path.dirname(__file__), "..")
+
+class PutRequest(urllib2.Request):
+    def get_method(self):
+        return "PUT"
 
 def print_help():
     print "Usage: m5 <command> <options>\n"
@@ -61,24 +71,48 @@ def run_tutorial_server(open_browser=True):
         Timer(1.0, open_tutorial_browser).start()
     m5server.start_tutorial(os.path.join(M5_DIR, "docs", "tutorial"))
     
-def deploy_app():
+def deploy_app(remote_addr):
     print "Deploying app..."
-    # For now we just upload everything in a huge mime message
-    files = glob.glob("*") + glob.glob("*/*")
-    app_name = os.path.basename(os.getcwd())
-    data = {'__app_name' : app_name}
-    for f in files:
-        if os.path.isfile(f):
-            data[f] = open(f)
-    response = urllib2.urlopen("http://m5apps.org/app/" + app_name + "/upload", data)
-    print response
     
-def compile_app():
-    name = "app.m5.html"
-    print "Compiling " + name + "..."
+    remote_addr = remote_addr or "http://m5apps.org"
+    
+    app = M5App("foo", ".")
+    if not os.path.exists("build"):
+        build_app()
+    os.chdir("build")
+    fileList = []
+    rootdir = "."
+    for root, subFolders, files in os.walk(rootdir):
+        for file in files:
+            fileList.append(os.path.join(root,file))
+
+    fname = "../" + app.name + ".build.tar"
+    tarf = tarfile.open(fname, "w")
+    for f in fileList:
+        tarf.add(f)
+    tarf.close()
+
+    # httplib approach
+    addr = re.sub("http://", "", remote_addr)
+    print addr
+    connection =  httplib.HTTPConnection(addr)
+    body_content = open(fname, "rb").read()
+    connection.request('PUT', "/app/" + app.name + "/upload", body_content)
+    print connection.getresponse().read()
+    os.remove(fname)
+    
+def build_app():
+    if os.path.exists("build"):
+        shutil.rmtree("build")
+    shutil.copytree(".", "./build", ignore=shutil.ignore_patterns("*.pyc", "build/*","app.html","\.DS_Store"))    
+    name = "build/app.m5.html"
+    print "Building " + name + "... into build"
     f = open(name, 'w')
     f.write(M5Compiler().compile("app.html", include_sim=False))
     f.close()
+    os.mkdir(os.path.join("build", "lib"))
+    shutil.copytree(os.path.join(M5_DIR, "jqtouch"), os.path.join("build", "lib", "jqtouch"))
+    shutil.copytree(os.path.join(M5_DIR, "lib"), os.path.join("build", "lib", "m5"))
     print "done."
         
 def main():
@@ -88,7 +122,7 @@ def main():
 
     command = sys.argv[1]
     try:
-        opts, args = getopt.getopt(sys.argv[2:], "he:l", ["help", "examples","launchsim","nb"])
+        opts, args = getopt.getopt(sys.argv[2:], "he:l", ["help", "examples","launchsim","nb","remote="])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -98,6 +132,7 @@ def main():
     launchsim = False
     environment = "development"
     open_browser = True
+    remote_addr = None
     for o, arg in opts:
         if o in ("-h", "--help"):
             usage()
@@ -113,6 +148,8 @@ def main():
             if not environment in ("development","production","testing"):
                 print "Error, unknown environment: " + arg
                 environment = "development"
+        elif o == "--remote":
+            remote_addr = arg
         else:
             assert False, "unknown option: " + o
 
@@ -126,9 +163,9 @@ def main():
     elif command == "create":
         create_app(sys.argv[2])
     elif command == "deploy":
-        deploy_app()
-    elif command == "compile":
-        compile_app()
+        deploy_app(remote_addr)
+    elif command == "build":
+        build_app()
     else:
         print "Error, unknown command: " + command
         sys.exit(2)

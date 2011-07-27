@@ -156,7 +156,8 @@ def remote_connect__(name):
     for k in command_queues.keys():
         if re.match(name + "\.", k):
             print "Client already connected as " + k + ", closing"
-            command_queues[k].append("#remote#close")
+            #command_queues[k].append("#remote#close")
+            del command_queues[k]
     
     # generate a unique key to identify connections
     key = name + "." + str(random.randint(0, 99999))
@@ -189,6 +190,8 @@ def send_command__(key):
                 condition.wait(0.5)
                 condition.release()
                 res=check_response(key)
+    if len(active_clients) == 0:
+        print "No clients waiting"
     print "Returning response to commander: " + str(res)
     return (res and res or '')
 
@@ -221,11 +224,12 @@ def get_command__(key):
     global command_queues
     global active_clients
     
+    print "[" + key + "] get_command..."
     # Return any queued commands to a client (the mobile app itself)
     if key in command_queues:
         loopTime = 0
         active_clients[key] = True
-        print "Client " + key + " waiting for commands..."
+        print "Client " + key + " waiting for commands..., set to active"
         while loopTime < 20:
             if len(command_queues[key]) > 0:
                 cmd = command_queues[key].pop()
@@ -239,7 +243,7 @@ def get_command__(key):
                     conditions[key].release()
                 except RuntimeError:
                     time.sleep(0.1)
-                    
+        print "Marking " + key + "as inactive"            
         del active_clients[key]
         return ""
     else:
@@ -252,7 +256,7 @@ def send_response__(key):
     global conditions
     response = request.forms.get('response')
     # Send a response to all other listeners
-    print "Received response (" + key + "): " + response + " in thread: " + threading.current_thread().name
+    print "Received response (" + key + "): " + str(response) + " in thread: " + threading.current_thread().name
     for k, queue in response_queues.iteritems():
         if k != key:
             print "Notifying " + k + " of response"
