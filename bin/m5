@@ -8,9 +8,6 @@ import shutil
 import webbrowser
 from threading import Timer
 import tarfile
-#import MultipartPostHandler
-from MultiPartForm import MultiPartForm
-import codecs
 
 from m5compiler import *
 import m5server
