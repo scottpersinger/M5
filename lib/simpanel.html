@@ -3,6 +3,8 @@
     <head>
       <meta charset="UTF-8" />
       <title>M5 Simulator Control Panel</title>
+      <link rel="stylesheet" href="lib/m5/m5.simulator.css" />
+      <link rel="stylesheet" href="tutorial__/docs.css" />
       <script type="text/javascript" src="lib/jqtouch/jquery-1.5.1.min.js"></script>
       <script type="text/javascript" src="lib/m5/m5.boot.js"></script>
       <script>
@@ -21,6 +23,8 @@
         M5.settings.app_name = "sim.m5apps.org";
       </script>
       
+      <script src="http://yui.yahooapis.com/3.3.0/build/yui/yui-min.js" charset="utf-8"></script>
+      
       <style>
         a {
           color:blue;
@@ -35,29 +39,19 @@
         #toolbar .tab {
           float:left;
           width:80px;
-          background-color:#77BDEA;
-          border:1px solid #CCC;
-          padding:4px;
-          font-weight:normal;
-          border-radius: 4px 4px 0px 0px;
-          cursor:pointer;
+          margin-right:2px;
         }
         #toolbar .active {
           font-weight:bold;
-          background-color:#CCE7FC;
+        	background: -webkit-gradient(linear, left top, left bottom, from(#EEE), to(#979797));
         }
         .panels {
           overflow:hidden;
           min-height:100%;
         }
         .panels .panel {
-          display:none;
           min-height:100%;
         }
-        .panels .active {
-          display:block;
-        }
-        
         #imgarea img {
           max-height: 300px;
         }
@@ -84,6 +78,18 @@
           padding:0;
           height:100%;
         }
+        
+        .fillout {
+          position:absolute;
+          top:0;
+          left:0;
+          right:0;
+          bottom:0;
+        }
+        body > div {
+          height:100%;
+        }
+        
       </style>
       
       <script>
@@ -195,8 +201,8 @@
           }
           
           $('.tab').click(function() {
-            var tab = $(this).attr("data-tab");
-            switch_tab(tab);
+            //var tab = $(this).attr("data-tab");
+            //switch_tab(tab);
           });
           $('.flink').live('click', function() {
             var fname = $(this).attr('data-file');
@@ -218,6 +224,10 @@
             cancel_editor();
           });
           
+          $('#storage-clear').click(function(e) {
+            M5.remote.command("clear_local_storage()");
+          });
+          
           $('#console_entry').keyup(function(e) {
             if (e.keyCode == 13) {
               run_console_entry();
@@ -227,49 +237,81 @@
             } else if (e.keyCode == 40) {
               forward_history();
             }
-            //console.log("New pos " + history_pos);
           });
+          
+          function load_tutorial_page(url) {
+            if (url == "" || url == "/") {
+              url = "index.md"
+            }
+            if (!url.match(/^http:/)) {
+              url = "/tutorial__/" + url;
+            } else {
+              window.open(url);
+              return;
+            }
+            $('#tutorial').load(url, function() {
+              $('#tutorial a').click(function(e) {
+                e.preventDefault();
+                load_tutorial_page($(this).attr('href'));
+              });
+            });
+          }
+          load_tutorial_page('index.md');
+          
           
           M5.addConsoleListener(function(msg) {
             write_console(msg);
           });
           
           load_files();
-          switch_tab('console');
+          //switch_tab('console');
         });
 
       </script>
     </head>
-    <body style="height:100%">
-        <div style="height:100%">
-        <div id="toolbar">
-          <div class="tab active" data-tab="console">Console</div>
-          <div class="tab" data-tab="editor">Editor</div>
-          <div class="tab" data-tab="storage">Storage</div>
-          <div style="clear:both"></div>
-        </div>
-        <div class="panels" style="position:relative">
-          <div id="console" class="panel">
-            <div id="console_output">
-            </div>
-            <div style="border:1px solid #000">> <input id="console_entry" type="text" style="width:90%;border:none"></input></div>
-          </div>
-          <div id="editor" class="panel active" style="position:absolute;top:0;left:0;right:0;bottom:0">
-            <div id="filelist" style="float:left;width:100px;height:100%;font-size:12px;border-right:1px solid #222"></div>
-            <div style="margin-left:104px;height:100%">
-              <div class="toolbar" style="height:30px;border-bottom:1px solid #666;padding-top:4px">
-                <a id="save"><img src="lib/m5/assets/disk-black.png" /></a>
-                <a id="cancel"><img src="lib/m5/assets/minus-circle.png" /></a>
-                <div id="editor_message" style="float:right;margin-right:40px;font-weight:bold"></div>
+    <body style="height:100%" class="yui3-skin-sam">
+        <div id="container" style="height:100%">
+          <ul>
+            <li><a href="#console">Console</a></li>
+            <li><a href="#editor">Editor</a></li>
+            <li><a href="#storage">Storage</a></li>
+            <li><a href="#tutorial">Tutorial</a></li>
+          </ul>
+          <div class="panels" style="position:relative">
+            <div id="console" class="panel">
+              <div id="console_output">
               </div>
-              <textarea id="content" style="width:100%;height:100%"></textarea>
-              <div id="imgarea" style="position:absolute;padding:20px;background:#CCC;display:none"></div>
+              <div>> <input id="console_entry" type="text" style="width:90%;border:none"></input></div>
+            </div>
+            <div id="editor" class="panel" style="position:absolute;top:0;left:0;right:0;bottom:0">
+              <div id="filelist" style="float:left;width:100px;height:100%;font-size:12px;border-right:1px solid #222"></div>
+              <div style="margin-left:104px;height:100%">
+                <div class="toolbar" style="height:30px;border-bottom:1px solid #666;padding-top:4px">
+                  <a id="save"><img src="lib/m5/assets/disk-black.png" /></a>
+                  <a id="cancel"><img src="lib/m5/assets/minus-circle.png" /></a>
+                  <div id="editor_message" style="float:right;margin-right:40px;font-weight:bold"></div>
+                </div>
+                <textarea id="content" style="width:100%;height:100%"></textarea>
+                <div id="imgarea" style="position:absolute;padding:20px;background:#CCC;display:none"></div>
+              </div>
+            </div>
+            <div id="storage" class="panel">
+              <button id="storage-clear">Clear Local Storage</button>
+            </div>
+            <div id="tutorial" class="panel fillout" style="overflow-y:scroll">
             </div>
           </div>
-          <div id="storage" class="panel">
-            Storage editor
-          </div>
         </div>
-        </div>
+        
+        <script>
+          YUI().use('tabview', function (Y) {
+              var tabview = new Y.TabView({
+                  srcNode: '#container'
+              });
+
+              tabview.render();
+              $('.yui3-tabview-panel').css('background-color', '#FAFAFA');
+          });
+        </script>
     </body>
 </html>

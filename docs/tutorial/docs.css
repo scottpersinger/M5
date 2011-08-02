@@ -31,10 +31,10 @@ code {
 .footer {
   margin-top:10px;
   border-top:2px solid #333;
-  text-align:center;
+  text-align:left;
   position:relative;
 }
 
-.footer a {
+.footer a.menu {
   margin:0px 20px;
 }

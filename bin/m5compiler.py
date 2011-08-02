@@ -29,7 +29,7 @@ class M5Compiler:
         inside_comment = False
         buffered = []
         for line in f:
-            if re.search("<html",line):
+            if re.search("<html",line) and environment=="production":
                 result.append(re.sub("<html.*?>", "<html manifest=\"cache.manifest\">", line))
                 continue
             if re.search("<!--",line):
@@ -44,6 +44,11 @@ class M5Compiler:
                         result.append(lines)
             else:
                 result.append(line)
+            if re.search("<head>", line) and environment == "development":
+                result.append("<!-- prevent cache -->");
+                result.append("<meta http-equiv=\"cache-control\" content=\"no-cache\">");
+                result.append("<meta http-equiv=\"pragma\" content=\"no-cache\">");
+                
             if inside_comment and re.search("-->",line):
                 inside_comment = False
                 result += buffered
@@ -74,12 +79,12 @@ class M5Compiler:
         elif re.match("m5\.env",modname):
             return "m5.env." + self.env + ".js"
         elif re.match("m5\.",modname):
-            if (not re.search('\.simulator',modname) or self.opt_sim) and (not re.search('\.remote_console',modname)):
-                return "lib/m5/" + modname + ".js"
-            else:
-                return None
+            if (not re.search('\.simulator',modname) or self.opt_sim):
+                if not re.search('\.remote_console',modname) or self.env == "development":
+                    return "lib/m5/" + modname + ".js"
+            return None
         elif re.match("jqtouch", modname):
-            m = re.match("jqtouch\(theme:(\w+)\)?",modname)
+            m = re.match("jqtouch\(theme:(\S+)\)",modname)
             theme = m.group(1) or "default"
             return ["lib/jqtouch/jqtouch.js","lib/jqtouch/jqtouch.css", ("lib/jqtouch/themes/" + theme + "/theme.css")] 
         else:

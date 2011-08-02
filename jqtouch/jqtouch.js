@@ -590,7 +590,7 @@
             }
             
             // Make sure we have a tappable element
-            if (!$el.length || !$el.attr('href')) {
+            if (!$el.length || (!$el.attr('href') && !$el.is(jQTSettings.backSelector))) {
                 _debug('Could not find a link related to tapped element');
                 return false;
             }

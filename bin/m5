@@ -21,22 +21,23 @@ class PutRequest(urllib2.Request):
 
 def print_help():
     print "Usage: m5 <command> <options>\n"
-    print "m5 create <path> - Create new app at path"
-    print "m5 server [-e <environment> --examples --launchsim --nb] - Run the local web server for the current app"
+    print "m5 create [--template=name] <path> - Create new app at path"
+    print "m5 server [-e <environment> --examples --simulator --nb] - Run the local web server for the current app"
     print "m5 compile - Expands dynamic entries in your app.html file to generate index.html"
     print "m5 deploy [--scratchpad] - Deploy the current app"
     print "m5 tutorial - Start the tutorial server"
     
   
-def create_app(path):
+def create_app(path,template=None):
     # Copy app template
     if os.path.exists(path):
         print "Error: path " + path + " already exists"
         exit()
     else:
-        print "Creating new app " + path + "..."
+        template = template or "cities"
+        print "Creating new app " + path + " from template '" + template + "'..."
         app_name = os.path.basename(path)
-        shutil.copytree(os.path.join(M5_DIR, "templates", "cities"), path)
+        shutil.copytree(os.path.join(M5_DIR, "templates", template), path)
         print "  -> " + path
         for f in glob.glob(os.path.join(M5_DIR, "templates", "*.js")):
             shutil.copyfile(f, os.path.join(path, os.path.basename(f)))
@@ -56,9 +57,12 @@ def create_app(path):
 def run_server(example = False, launchsim = False, environment="development",open_browser=False):
     print "Running M5 web server with " + environment + " environment ..."
     if open_browser:
-        webbrowser.open("http://localhost:8000")
+        Timer(1.0, open_simulator).start()
     m5server.start_m5server(M5_DIR, environment=environment, include_sim=launchsim)
 
+def open_simulator():
+    webbrowser.open("http://localhost:8000")
+    
 def open_tutorial_browser():
     webbrowser.open("http://localhost:7777")
         
@@ -119,7 +123,7 @@ def main():
 
     command = sys.argv[1]
     try:
-        opts, args = getopt.getopt(sys.argv[2:], "he:l", ["help", "examples","launchsim","nb","remote="])
+        opts, args = getopt.getopt(sys.argv[2:], "he:s", ["help", "examples","simulator","nb","remote=","template="])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -130,16 +134,19 @@ def main():
     environment = "development"
     open_browser = True
     remote_addr = None
+    template = None
     for o, arg in opts:
         if o in ("-h", "--help"):
             usage()
             sys.exit()
         elif o == "--examples":
             examples = True
-        elif o in ("-l", "--launchsim"):
+        elif o in ("-l", "--simulator"):
             launchsim = True
         elif o == "--nb":
             open_browser = False
+        elif o == "--template":
+            template = arg
         elif o in ("-e"):
             environment = arg
             if not environment in ("development","production","testing"):
@@ -158,7 +165,7 @@ def main():
     elif command == "server":
         run_server(example = examples, launchsim = launchsim, environment = environment, open_browser=open_browser)
     elif command == "create":
-        create_app(sys.argv[2])
+        create_app(args[0], template=template)
     elif command == "deploy":
         deploy_app(remote_addr)
     elif command == "build":

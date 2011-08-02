@@ -17,7 +17,7 @@ Pick a directory where you want to locate your app, and run this:
     
 This creates a skeleton for your new app called 'testapp'. Now cd into 'testapp', and run:
 
-        m5 server --launchsim
+        m5 server --simulator
 
 This starts the local web server, serving your new app, and opens a browser window to your app.
 You see your app running in the "simulator". This is really just an image of a phone with your

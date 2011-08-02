@@ -88,6 +88,14 @@ def index():
     else:
         return dir_listing()
 
+@route("/tutorial__/:path#.+#")
+def tutorial__(path):
+    file_path = os.path.join(M5_DIR, "docs", "tutorial", path)
+    if re.search("\.md$", file_path):
+           return markitdown(file_path)
+    else:
+        return static_file(os.path.basename(file_path), root = os.path.dirname(file_path))
+
 @route("/sim__")
 def sim__():
     global M5_LIB_DIR
@@ -273,6 +281,9 @@ def send_response__(key):
 # Needs to come after all other handlers
 ##################################################################################
 
+def dump_headers(request):
+    print request.environ
+    
 @route("/:path#.+#")
 def any_path(path):
     global M5_LIB_DIR
