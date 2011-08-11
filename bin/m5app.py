@@ -6,10 +6,10 @@ from StringIO import StringIO
 import re
 
 class M5App:
-    def __init__(self,name,root_dir,container=None):
+    def __init__(self,name,root_dir,container=None,index_path=None):
         self.name = name;
-        self.index_name = 'app.html'
-        self.compiled_name = 'app.m5.html'
+        self.index_name = index_path or 'app.m5.html'
+        self.compiled_name = 'app.html'
         self.root_dir = root_dir
         self.container = container
         self.version = '*'
@@ -31,6 +31,21 @@ class M5App:
         else:
             return self.root_path(path)
 
+    def run_offline(self, env):
+        return ("offline_envs" in self.manifest and env in self.manifest["offline_envs"])
+
+    def inline_js(self, env):
+        return env == "production" and ("inline_js" in self.manifest and self.manifest["inline_js"])
+
+    def minify_js(self, env):
+        return env == "production" and ("minify_js" in self.manifest and self.manifest["minify_js"])
+
+    def inline_css(self, env):
+        return env == "production" and ("inline_css" in self.manifest and self.manifest["inline_css"])
+
+    def minify_css(self, env):
+        return env == "production" and ("minify_css" in self.manifest and self.manifest["minify_css"])
+        
     def index_path(self):
         return self.file_path(self.index_name)
         

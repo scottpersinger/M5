@@ -4,6 +4,7 @@
   
     <head>
         <meta charset="UTF-8" />
+        
         <title>Cities of the World</title>
         
         <!--
@@ -11,16 +12,13 @@
             Javascript and CSS includes. You don't need to use these, you could use normal tags, but
             it makes things easier. Use "m5 compile" to see the generated code for these.
         
-            @require jquery
-            @require m5.boot, m5.env, m5.support
-            @require m5.simplestorage
-            @require m5.remote_console
-            @require m5.simulator
-            
-            @require jqtouch(theme:apple)
-            @require jqt.bars
-            @require iscroll
-            @require jqt.offline
+        @require jquery
+        @require m5.boot, m5.env, m5.support
+        @require m5.remote_console
+        @require m5.simulator
+        @require m5.simplestorage
+        
+        @require jqtouch(theme:apple)
             
         -->
 
@@ -43,35 +41,32 @@
                 jQT.barsSettings.autoLoad_iScroll = false;
               }
             });
+            
+            M5.onTouchReady(function() {
+              $('button').live('click', function(e) {
+                e.preventDefault();
+                jQT.goTo($(this).attr('href'));
+              });
+            });
+            
         </script>
         
-        
         <style type="text/css" media="screen">
-            /* Add styles here to customize the standard JQTouch theme. */
-        
-            /* Some common styles you might want to modify include:
-              #jqt ul li -> List items that make up a "table view"
-              #jqt ul li a -> The touchable link inside a list item. Set white-space:normal to allow multiple lines
-            
-              #jqt ul li.arrow -> disclosure arrow in a list item. Set background-image:none to remove it.
-            */
-            #home .toolbar > h1 {font-size:16px;}
-            #cities li img {
-              width:60px;
-              vertical-align:middle;
-            }
+          #cities img {
+            height:80px;
+          }
         </style>
     </head>
     <body>
         <div id="jqt">
             <!-- HOME PAGE -->
-            <div id="home" class="current">
+            <div id="home" class="pane edgetoedge">
                 <div class="toolbar">
                     <h1>Cities of the World</h1>
-                    <a class="button flip" id="infoButton" href="#settings">Settings</a>
+                    <a class="button ui-btn-right" href="#settings" data-transition="slideup">Settings</a>
                 </div>
-                <div class="s-scrollwrapper" momentum="true" vScrollbar="true">
-                  <ul id="cities" class="edgetoedge">
+                <div id="stories" class="">
+                  <ul id="cities" data-role="listview" data-inset="true" style="overflow-y:scroll">
                     <li><a href="#details">
                       <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcQdWPgFQycWBCgH9ENTu18Dig5NtU5CwkM1ZoJmf1PCtMzdLll8" />
                       New York</a></li>
@@ -87,47 +82,20 @@
                     <li><a href="#details">
                       <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcTzO_PjAed2UnH4BsTHBsxjkJXkRaaTRIw7dV6lU6Q5XmQ-Obud" />
                       Rome</a></li>
+                      <li><a>Orinda</a></li>
                   </ul>
                 </div>
             </div>
             
-            <div id="details">
+            <div id="details" class="pane">
               <div class="toolbar">
                   <h1 id="city-title"></h1>
-                  <a class="button back" href="#">Back</a>
+                  <a class="button back" href="#" data-rel="back">Back</a>
               </div>
-              <div style="display:block">
-                <ul class="rounded">
-                  <li id="city-details" style="padding:6px"></li>
-                </ul>
+              <div data-role="content" id="city-details">
               </div>
             </div>
               
-            <!-- SETTINGS PAGE -->
-            <div id="settings">
-                <div class="toolbar">
-                    <h1>Settings</h1>
-                    <a class="button goback" href="#">Close</a>
-                </div>
-                <div>
-                  <ul class="rounded">
-                    <li id="app-name"></li>
-                    <li id="user-agent"></li>
-                  </ul>
-                </div>
-            </div>
-            
-            <!-- MAKE ANOTHER PAGE 
-            <div id="page2">
-                <div class="toolbar">
-                    <h1>Page Title</h1>
-                    <a class="button back" href="#">Back</a>
-                </div>
-                <div>
-                  <- content ->
-                </div>
-            </div>
-            -->
             
         </div>
 
@@ -138,11 +106,11 @@
           // You can use M5.onTouchReady for code that needs to execute after jQTouch custom events are registered.
           // This runs at document.ready, but after jQTouch is setup.
           
+          /*
           M5.onTouchReady(function() {
-            // listen for the page to switch, the load city description for display on details page
-            $('#details').bind('pageAnimationStart', function() {
-              var tappedElt = $(this).data('referrer');
-              var cityName = $(tappedElt).text().trim();
+            console.log("Adding handler for detail page");
+            $('#cities li').live('NOmousedown', function() {
+              var cityName = $(this).text().trim();
               $.get('data/city_details.json', function(detail_set) {
                 var details = detail_set[cityName];
                 $('#city-details').html(details);
@@ -152,7 +120,7 @@
             $('#app-name').html("APP: " + M5.settings.app_name);
             $('#user-agent').html("UA: " + navigator.userAgent);
           });
-          
+          */
         </script>
         
     </body>

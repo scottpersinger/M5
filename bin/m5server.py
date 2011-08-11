@@ -28,6 +28,7 @@ from m5app import M5App
 M5_DIR = None
 M5_LIB_DIR = None
 JQTOUCH_DIR = None
+JQM_DIR = None
 M5_ENV = "development"
 INCLUDE_SIM = False
 DOC_HEADER = open(os.path.join(os.path.dirname(__file__), "../docs/tutorial/_head.html")).read()
@@ -41,15 +42,15 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
         
         
-def start_m5server(m5_root, environment="development", include_sim=False):
-    global M5_DIR, M5_LIB_DIR, JQTOUCH_DIR, M5_ENV, INCLUDE_SIM
+def start_m5server(m5_root, environment="development", include_sim=False, port = 8000):
+    global M5_DIR, M5_LIB_DIR, JQTOUCH_DIR, M5_ENV, INCLUDE_SIM, JQM_DIR
     INCLUDE_SIM = include_sim
     M5_ENV = environment
     M5_DIR = m5_root
     M5_LIB_DIR = os.path.join(M5_DIR, "lib")
     JQTOUCH_DIR = os.path.join(M5_DIR, "jqtouch")
+    JQM_DIR = os.path.join(M5_DIR, "jquery-mobile")
     debug(False)
-    port = 8000
     print "Access the app from your phone using: http://" + socket.gethostname() + ":" + str(port)
     
     run(server='cherrypy', host='0.0.0.0', port=port,reloader=False,quiet=True)
@@ -77,17 +78,20 @@ def error500(error):
     
 @route("/")
 def index():
-    global INCLUDE_SIM,M5_ENV,M5_DIR
     app = load_app()
+    return render_app(app)
+
+def render_app(app):
+    global INCLUDE_SIM,M5_ENV,M5_DIR
     if os.path.exists(app.index_name):
-        return M5Compiler().compile(app.index_path(), include_sim=INCLUDE_SIM, environment=M5_ENV)
+        return M5Compiler().compile(app.index_path(), include_sim=INCLUDE_SIM, environment=M5_ENV, m5_app=app)
     elif os.path.exists("index.html"):
         return static_file("index.html", root=M5_DIR)    
     elif os.path.exists("index.md"):
         return markitdown("index.md")  
     else:
         return dir_listing()
-
+    
 @route("/tutorial__/:path#.+#")
 def tutorial__(path):
     file_path = os.path.join(M5_DIR, "docs", "tutorial", path)
@@ -286,8 +290,15 @@ def dump_headers(request):
     
 @route("/:path#.+#")
 def any_path(path):
+    global M5_DIR
     global M5_LIB_DIR
     global JQTOUCH_DIR
+    global JQM_DIR
+    
+    if re.search("\.m5\.html$", path):
+        app = M5App("foo",".",index_path=path)
+        return render_app(app)
+        
     path_parts = path.split("/")
     lib_path = ""
     if len(path_parts) > 0 and path_parts[0] == 'lib':
@@ -302,6 +313,12 @@ def any_path(path):
         return static_file(fname, root=os.path.join(M5_LIB_DIR, lib_path))
     elif re.match("^lib/jqtouch/", path):
         return static_file(fname, root=os.path.join(JQTOUCH_DIR, lib_path))
+    elif re.match("^lib/jquery-mobile/", path):
+        return static_file(fname, root=os.path.join(JQM_DIR, lib_path))
+    elif re.match("^lib/jquery-\d+", path):
+        return static_file(fname, root=M5_DIR)
+    elif re.match("^lib/", path) and os.path.exists(os.path.join(M5_DIR, path)):
+        return static_file(fname, root=os.path.dirname(os.path.join(M5_DIR, path)))
     elif re.match("^License\.txt",path):
         return static_file(os.path.basename(path), root=os.path.join(os.path.dirname(__file__), ".."))
     else:

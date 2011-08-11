@@ -1,3 +1,5 @@
+/*
+
 * {
     margin: 0;
     padding: 0;
@@ -40,10 +42,10 @@ body {
     width: 100%;
     z-index: 0;
 }
+*/
 
 #jqt > .current {
     display: block !important;
-/*     z-index: 10; */
 }
 
 #jqt .in, #jqt .out {

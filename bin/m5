@@ -22,7 +22,7 @@ class PutRequest(urllib2.Request):
 def print_help():
     print "Usage: m5 <command> <options>\n"
     print "m5 create [--template=name] <path> - Create new app at path"
-    print "m5 server [-e <environment> --examples --simulator --nb] - Run the local web server for the current app"
+    print "m5 server [-e <environment> --examples --simulator --nb -p <port>] - Run the local web server for the current app"
     print "m5 compile - Expands dynamic entries in your app.html file to generate index.html"
     print "m5 deploy [--scratchpad] - Deploy the current app"
     print "m5 tutorial - Start the tutorial server"
@@ -54,14 +54,14 @@ def create_app(path,template=None):
         print "  -> manifest.json"
         print "done"
 
-def run_server(example = False, launchsim = False, environment="development",open_browser=False):
+def run_server(example = False, launchsim = False, environment="development",open_browser=False, port=8000):
     print "Running M5 web server with " + environment + " environment ..."
     if open_browser:
-        Timer(1.0, open_simulator).start()
-    m5server.start_m5server(M5_DIR, environment=environment, include_sim=launchsim)
+        Timer(1.0, open_simulator(port)).start()
+    m5server.start_m5server(M5_DIR, environment=environment, include_sim=launchsim, port=port)
 
-def open_simulator():
-    webbrowser.open("http://localhost:8000")
+def open_simulator(port = 8000):
+    webbrowser.open("http://localhost:%d" % port)
     
 def open_tutorial_browser():
     webbrowser.open("http://localhost:7777")
@@ -105,15 +105,24 @@ def deploy_app(remote_addr):
 def build_app():
     if os.path.exists("build"):
         shutil.rmtree("build")
-    shutil.copytree(".", "./build", ignore=shutil.ignore_patterns("*.pyc", "build/*","app.html","\.DS_Store"))    
-    name = "build/app.m5.html"
+    shutil.copytree(".", "./build", ignore=shutil.ignore_patterns("*.pyc", "build/*","app.m5.html","\.DS_Store"))    
+    name = "build/app.html"
     print "Building " + name + "... into build"
-    f = open(name, 'w')
-    f.write(M5Compiler().compile("app.html", include_sim=False))
-    f.close()
     os.mkdir(os.path.join("build", "lib"))
-    shutil.copytree(os.path.join(M5_DIR, "jqtouch"), os.path.join("build", "lib", "jqtouch"))
+    #shutil.copytree(os.path.join(M5_DIR, "jqtouch"), os.path.join("build", "lib", "jqtouch"))
+    shutil.copytree(os.path.join(M5_DIR, "jquery-mobile"), os.path.join("build", "lib", "jquery-mobile"))
     shutil.copytree(os.path.join(M5_DIR, "lib"), os.path.join("build", "lib", "m5"))
+    shutil.copy(os.path.join(M5_DIR,  "jquery-1.6.1.min.js"), os.path.join("build", "lib"))
+    
+    app_file = "app.m5.html"
+    app = M5App(os.path.basename(app_file), os.path.dirname(app_file))
+    if app.inline_js("production"):
+        print "Inlining javascript"
+    if app.inline_css("production"):
+        print "Inlining styles"
+    f = open(name, 'w')
+    f.write(M5Compiler().compile(app_file, environment="production", include_sim=False, src_dir="build", m5_app = app))
+    f.close()
     print "done."
         
 def main():
@@ -123,7 +132,7 @@ def main():
 
     command = sys.argv[1]
     try:
-        opts, args = getopt.getopt(sys.argv[2:], "he:s", ["help", "examples","simulator","nb","remote=","template="])
+        opts, args = getopt.getopt(sys.argv[2:], "he:sp:", ["help", "examples","simulator","nb","remote=","template="])
     except getopt.GetoptError, err:
         # print help information and exit:
         print str(err) # will print something like "option -a not recognized"
@@ -135,13 +144,16 @@ def main():
     open_browser = True
     remote_addr = None
     template = None
+    port = 8000
     for o, arg in opts:
         if o in ("-h", "--help"):
             usage()
             sys.exit()
         elif o == "--examples":
             examples = True
-        elif o in ("-l", "--simulator"):
+        elif o == "-p":
+            port = int(arg)
+        elif o in ("--simulator"):
             launchsim = True
         elif o == "--nb":
             open_browser = False
@@ -163,7 +175,7 @@ def main():
     elif command == "tutorial":
         run_tutorial_server(open_browser=open_browser);
     elif command == "server":
-        run_server(example = examples, launchsim = launchsim, environment = environment, open_browser=open_browser)
+        run_server(example = examples, launchsim = launchsim, environment = environment, open_browser=open_browser, port = port)
     elif command == "create":
         create_app(args[0], template=template)
     elif command == "deploy":

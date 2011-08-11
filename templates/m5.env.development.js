@@ -13,6 +13,9 @@
 M5.assume_browser(true);
 M5.settings.simulator_console = true;
 $(function() {
-  M5.remote.connect_receive(M5.settings.app_name);
+  if (M5.remote) {
+    M5.remote.connect_receive(M5.settings.app_name);
+  }
 });
 
+M5.settings.app_name = 'cities'
