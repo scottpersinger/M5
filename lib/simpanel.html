@@ -94,6 +94,9 @@
       
       <script>
         var editor_file = null;
+        var deviceList;
+
+        
         function switch_tab(tab) {
           $('.tab').removeClass("active");
           $('.tab[data-tab=' + tab + ']').addClass("active");
@@ -186,10 +189,33 @@
           editor_file = null;
         }
         
-        $(function() {
+        M5.onTouchReady(function() {
           $(function() {
             M5.remote.connect_send(M5.settings.app_name);
           });
+
+          M5.simulator.load_devices(function(devices) {
+            deviceList = devices;
+            var opts = "";
+            $.each(deviceList, function(name, item) {
+              opts += "<option>" + name + "</option>";
+            });
+            $("#device").html(opts);
+            changeDevice('iPhone 3G');
+          });
+          
+          function changeDevice(name) {
+            window.parent.postMessage("device," + name, "http://" + window.location.host);
+            
+          }
+          $('#device').change(function() {
+            changeDevice($(this).val());
+          });
+
+          $('#landscape').change(function() {
+            window.parent.postMessage("landscape," + $(this).attr('checked'), "http://" + window.location.host);
+          });
+          
           var h;
           if (h = M5.util.get_cookie('hist')) {
             console_history = eval(h);
@@ -276,6 +302,7 @@
             <li><a href="#editor">Editor</a></li>
             <li><a href="#storage">Storage</a></li>
             <li><a href="#tutorial">Tutorial</a></li>
+            <div style="margin-right:20px;float:right">Device <select id="device"></select>&nbsp;&nbsp;<input type="checkbox" id="landscape" /> Landscape</div>
           </ul>
           <div class="panels" style="position:relative">
             <div id="console" class="panel">

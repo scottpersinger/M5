@@ -19,6 +19,7 @@ class M5Compiler(HTMLParser):
     
     path_lookups = {
         'jquery' : "lib/jquery-1.6.1.min.js",
+        'jquery-template' : "lib/jquery.tmpl.min.js",
         'zepto' : "lib/zepto.js",
         'zepto-min' : "lib/zepto.min.js",
         'jquery-mobile' : ['lib/jquery-mobile/jquery.mobile-1.0b2.css', 'lib/jquery-mobile/jquery.mobile-1.0b2.js'],
@@ -26,6 +27,7 @@ class M5Compiler(HTMLParser):
         'iscroll' : "lib/m5/iscroll-lite.js",
         'jqt.bars' : ['lib/jqtouch/extensions/jqt.bars/jqt.bars.js', 'lib/jqtouch/extensions/jqt.bars/jqt.bars.css'],
         'jqt.offline' : 'lib/jqtouch/extensions/jqt.offline.js',
+        'scrollability': ["lib/scrollability.css", "lib/scrollability.js"],
         'm5.simulator': ['lib/m5/m5.simulator.js']
     }
 
@@ -53,6 +55,7 @@ class M5Compiler(HTMLParser):
         self.buffer.write("<!%s>" % decl)
         
     def handle_starttag(self, tag, attrs):
+        #print ">> " + tag
         args = dict(attrs)
         self.tag_stack.append(tag)
         if self.inside("head"):
@@ -72,7 +75,8 @@ class M5Compiler(HTMLParser):
             self.buffer.write(self.kill_cache_block())
 
     def handle_endtag(self, tag):
-        last = self.tag_stack.pop()
+        #print "<< " + tag
+        last = (len(self.tag_stack) > 0 and self.tag_stack.pop()) or None
         if (last != tag):
             self.error("Hmm..unmatched tag, started %s but ended %s" % (last, tag))
             

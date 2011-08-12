@@ -112,7 +112,8 @@ def build_app():
     #shutil.copytree(os.path.join(M5_DIR, "jqtouch"), os.path.join("build", "lib", "jqtouch"))
     shutil.copytree(os.path.join(M5_DIR, "jquery-mobile"), os.path.join("build", "lib", "jquery-mobile"))
     shutil.copytree(os.path.join(M5_DIR, "lib"), os.path.join("build", "lib", "m5"))
-    shutil.copy(os.path.join(M5_DIR,  "jquery-1.6.1.min.js"), os.path.join("build", "lib"))
+    for f in glob.glob(os.path.join(M5_DIR, "lib", "*.*")):
+        shutil.copy(f, os.path.join("build", "lib"))
     
     app_file = "app.m5.html"
     app = M5App(os.path.basename(app_file), os.path.dirname(app_file))

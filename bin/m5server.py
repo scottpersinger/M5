@@ -51,7 +51,10 @@ def start_m5server(m5_root, environment="development", include_sim=False, port =
     JQTOUCH_DIR = os.path.join(M5_DIR, "jqtouch")
     JQM_DIR = os.path.join(M5_DIR, "jquery-mobile")
     debug(False)
-    print "Access the app from your phone using: http://" + socket.gethostname() + ":" + str(port)
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("google.com",80))
+    print "Access the app from your phone using: http://" + socket.gethostname() + ":" + str(port) + \
+      " (or http://" + s.getsockname()[0] + ":" + str(port) + ")"
     
     run(server='cherrypy', host='0.0.0.0', port=port,reloader=False,quiet=True)
 
@@ -315,8 +318,6 @@ def any_path(path):
         return static_file(fname, root=os.path.join(JQTOUCH_DIR, lib_path))
     elif re.match("^lib/jquery-mobile/", path):
         return static_file(fname, root=os.path.join(JQM_DIR, lib_path))
-    elif re.match("^lib/jquery-\d+", path):
-        return static_file(fname, root=M5_DIR)
     elif re.match("^lib/", path) and os.path.exists(os.path.join(M5_DIR, path)):
         return static_file(fname, root=os.path.dirname(os.path.join(M5_DIR, path)))
     elif re.match("^License\.txt",path):

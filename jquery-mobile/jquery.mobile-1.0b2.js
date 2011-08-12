@@ -728,8 +728,8 @@ function handleTouchEnd( event ) {
 
 	var flags = getVirtualBindingFlags( event.target ),
 		t;
+  
 	triggerVirtualEvent( "vmouseup", event, flags );
-
 	if ( !didScroll ) {
 		if ( triggerVirtualEvent( "vclick", event, flags ) ) {
 			// The target of the mouse events that follow the touchend
@@ -3696,6 +3696,7 @@ $.widget( "mobile.listview", $.mobile.widget, {
 			dividertheme = $list.jqmData( "dividertheme" ) || o.dividerTheme,
 			listsplittheme = $list.jqmData( "splittheme" ),
 			listspliticon = $list.jqmData( "spliticon" ),
+			buttonEvents = $list.jqmData("button-events"),
 			li = $list.children( "li" ),
 			counter = $.support.cssPseudoElement || !$.nodeName( $list[ 0 ], "ol" ) ? 0 : 1,
 			item, itemClass, itemTheme,
@@ -3718,6 +3719,7 @@ $.widget( "mobile.listview", $.mobile.widget, {
 					icon = item.jqmData("icon");
 
 					item.buttonMarkup({
+					  supressEvents: (buttonEvents == null || !buttonEvents),
 						wrapperEls: "div",
 						shadow: false,
 						corners: false,
@@ -5444,6 +5446,9 @@ $.fn.buttonMarkup = function( options ) {
 		}
 
 		buttonClass = "ui-btn ui-btn-up-" + o.theme;
+		if (o.supressEvents) {
+		  buttonClass += " ui-no-btn-events";
+		}
 
 		if ( o.inline ) {
 			buttonClass += " ui-btn-inline";
@@ -5498,7 +5503,7 @@ $.fn.buttonMarkup.defaults = {
 function closestEnabledButton( element ) {
 	while ( element ) {
 		var $ele = $( element );
-		if ( $ele.hasClass( "ui-btn" ) && !$ele.hasClass( "ui-disabled" ) ) {
+		if ( $ele.hasClass( "ui-btn" ) && !$ele.hasClass( "ui-disabled" ) && !$ele.hasClass("ui-no-btn-events")) {
 			break;
 		}
 		element = element.parentNode;
