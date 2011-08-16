@@ -40,11 +40,14 @@ def create_app(path,template=None):
         shutil.copytree(os.path.join(M5_DIR, "templates", template), path)
         print "  -> " + path
         for f in glob.glob(os.path.join(M5_DIR, "templates", "*.js")):
-            shutil.copyfile(f, os.path.join(path, os.path.basename(f)))
-            if re.search("m5\.env\.development\.js", f):
-                envf = open(os.path.join(path, os.path.basename(f)), 'a')
-                envf.write("M5.settings.app_name = '" + app_name + "'\n");
-                envf.close()
+            tf = open(os.path.join(path, os.path.basename(f)), "w")
+            tf.write(re.sub("%%NAME%%", app_name, manifest, open(f).read()))
+            tf.close()
+            # shutil.copyfile(f, os.path.join(path, os.path.basename(f)))
+            # if re.search("m5\.env\.development\.js", f):
+            #     envf = open(os.path.join(path, os.path.basename(f)), 'a')
+            #     envf.write("M5.settings.app_name = '" + app_name + "'\n");
+            #     envf.close()
             print "  -> " + os.path.basename(f)
         manifest = open(os.path.join(M5_DIR, "templates", "manifest.json")).read()
         manifest = re.sub("%%NAME%%", app_name, manifest)
@@ -52,17 +55,24 @@ def create_app(path,template=None):
         f.write(manifest)
         f.close
         print "  -> manifest.json"
+        shutil.copy(os.path.join(M5_DIR, "templates", ".gitignore"), path)
+        print "  -> .gitignore"
         print "done"
 
 def run_server(example = False, launchsim = False, environment="development",open_browser=False, port=8000):
     print "Running M5 web server with " + environment + " environment ..."
+    callback = None
     if open_browser:
-        Timer(1.0, open_simulator(port)).start()
-    m5server.start_m5server(M5_DIR, environment=environment, include_sim=launchsim, port=port)
+        callback = open_simulator
+    
+    m5server.start_m5server(M5_DIR, environment=environment, include_sim=launchsim, port=port, callback=callback)
 
 def open_simulator(port = 8000):
-    webbrowser.open("http://localhost:%d" % port)
-    
+    try:
+        webbrowser.open("http://localhost:%d" % port)
+    except:
+        pass
+        
 def open_tutorial_browser():
     webbrowser.open("http://localhost:7777")
         

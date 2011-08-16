@@ -4,7 +4,7 @@
   
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="viewport" content="width=device-width,user-scalable=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         
         <title>Cities of the World</title>
@@ -17,9 +17,9 @@
             @require jquery
             @require jquery-mobile
             @require m5.boot, m5.env, m5.support
-            @require m5.simplestorage
+            @require m5.remote_console
             @require m5.simulator
-            
+            @require scrollability
         -->
 
         <!-- application.js is a good place to put non-display app logic. -->
@@ -32,14 +32,15 @@
         </style>
     </head>
     <body>
-        <div id="container">
+        <div >
             <!-- HOME PAGE -->
             <div id="home" data-role="page" data-theme="b">
-                <div data-role="header" data-position="fixed">
+                <div data-role="header" class="bar top" style="position:absolute">
                     <h1>Cities of the World</h1>
                     <a class="button ui-btn-right" href="#settings" data-transition="slideup">Settings</a>
                 </div>
-                <ul id="cities" data-role="listview" data-inset="true" style="overflow-y:scroll">
+                <div id="container">
+                <ul id="cities" data-role="listview" data-inset="true" class="scrollable vertical" data-button-events="false" data-theme="d">
                   <li><a href="#details">
                     <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcQdWPgFQycWBCgH9ENTu18Dig5NtU5CwkM1ZoJmf1PCtMzdLll8" />
                     New York</a></li>
@@ -61,13 +62,56 @@
                   <li><a href="#details">
                     <img src="http://www.newspapers24.com/images/cities/moscow.jpg" />
                     Moscow</a></li>
+                    <li><a href="#details">
+                      <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcQdWPgFQycWBCgH9ENTu18Dig5NtU5CwkM1ZoJmf1PCtMzdLll8" />
+                      New York</a></li>
+                    <li><a href="#details">
+                      <img src="http://t1.gstatic.com/images?q=tbn:ANd9GcQuexouqhiDwS-5etDwbTN7xHcyAle3qVe2XbXZtI-q_d_vpRHn" />
+                      Paris</a></li>
+                    <li><a href="#details">
+                      <img src="http://t3.gstatic.com/images?q=tbn:ANd9GcQdsUi7rro27c8n5CX_OcscNIBkfEjKZD4w03cyy93ZsCHPKGdg8A" />
+                      London</a></li>
+                    <li><a href="#details">
+                      <img src="http://t1.gstatic.com/images?q=tbn:ANd9GcSjSDuDgfWvgmjO1aTQJdLgg9X1Gy4Vqx4xIkvJ1HG7IyMLai-fFQ" />
+                      Tokyo</a></li>
+                    <li><a href="#details">
+                      <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcTzO_PjAed2UnH4BsTHBsxjkJXkRaaTRIw7dV6lU6Q5XmQ-Obud" />
+                      Rome</a></li>
+                    <li><a href="#details">
+                      <img src="http://4.bp.blogspot.com/-IKULUd7AvVw/TgZFJKI7UDI/AAAAAAAAANU/e_9ASnBVBGc/s1600/Brandburger%2BTor.jpg" />
+                      Berlin</a></li>
+                    <li><a href="#details">
+                      <img src="http://www.newspapers24.com/images/cities/moscow.jpg" />
+                      Moscow</a></li>
+                      <li><a href="#details">
+                        <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcQdWPgFQycWBCgH9ENTu18Dig5NtU5CwkM1ZoJmf1PCtMzdLll8" />
+                        New York</a></li>
+                      <li><a href="#details">
+                        <img src="http://t1.gstatic.com/images?q=tbn:ANd9GcQuexouqhiDwS-5etDwbTN7xHcyAle3qVe2XbXZtI-q_d_vpRHn" />
+                        Paris</a></li>
+                      <li><a href="#details">
+                        <img src="http://t3.gstatic.com/images?q=tbn:ANd9GcQdsUi7rro27c8n5CX_OcscNIBkfEjKZD4w03cyy93ZsCHPKGdg8A" />
+                        London</a></li>
+                      <li><a href="#details">
+                        <img src="http://t1.gstatic.com/images?q=tbn:ANd9GcSjSDuDgfWvgmjO1aTQJdLgg9X1Gy4Vqx4xIkvJ1HG7IyMLai-fFQ" />
+                        Tokyo</a></li>
+                      <li><a href="#details">
+                        <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcTzO_PjAed2UnH4BsTHBsxjkJXkRaaTRIw7dV6lU6Q5XmQ-Obud" />
+                        Rome</a></li>
+                      <li><a href="#details">
+                        <img src="http://4.bp.blogspot.com/-IKULUd7AvVw/TgZFJKI7UDI/AAAAAAAAANU/e_9ASnBVBGc/s1600/Brandburger%2BTor.jpg" />
+                        Berlin</a></li>
+                      <li><a href="#details">
+                        <img src="http://www.newspapers24.com/images/cities/moscow.jpg" />
+                        Moscow</a></li>
                 </ul>
+                </div>
             </div>
             
             <div id="details" data-role="page" data-theme="b">
               <div data-role="header">
                   <h1 id="city-title"></h1>
-                  <a class="button back" href="#" data-rel="back">Back</a>
+                  <a class="button back" href="#" data-rel="back" data-icon="arrow-l">Back</a>
               </div>
               <div data-role="content" id="city-details">
               </div>
@@ -77,10 +121,11 @@
             <div id="settings" data-role="page" data-theme="b">
                 <div data-role="header">
                     <h1>Settings</h1>
-                    <a class="button ui-btn-right" href="#" data-rel="back">Close</a>
+                    <a class="button ui-btn-right" href="#" data-rel="back" data-icon="arrow-d">Close</a>
                 </div>
                 <div>
                   <ul data-role="listview">
+                    <li id="location"></li>
                     <li id="app-name"></li>
                     <li id="user-agent"></li>
                   </ul>
@@ -97,8 +142,6 @@
           // This runs at document.ready, but after jQTouch is setup.
           
           M5.onTouchReady(function() {
-            
-            console.log("Adding handler for detail page");
             $('#cities li').live('mousedown', function() {
               var cityName = $(this).text().trim();
               $.get('data/city_details.json', function(detail_set) {
@@ -107,6 +150,7 @@
               }, 'json');
             });
             
+            $('#location').html(window.location.href);
             $('#app-name').html("APP: " + M5.settings.app_name);
             $('#user-agent').html("UA: " + navigator.userAgent);
           });

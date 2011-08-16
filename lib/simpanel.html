@@ -226,10 +226,6 @@
             }
           }
           
-          $('.tab').click(function() {
-            //var tab = $(this).attr("data-tab");
-            //switch_tab(tab);
-          });
           $('.flink').live('click', function() {
             var fname = $(this).attr('data-file');
             if (fname.match(/(\.png|\.jpe?g|\.gif)$/)) {
@@ -282,7 +278,7 @@
               });
             });
           }
-          load_tutorial_page('index.md');
+          //load_tutorial_page('index.md');
           
           
           M5.addConsoleListener(function(msg) {

@@ -36,6 +36,7 @@ class M5Compiler(HTMLParser):
         self.src_dir = src_dir
         self.env = environment
         self.tag_stack = [] #current tags being parsed
+        self.suppressed_tags = []
         self.js_buffer = StringIO()
         self.includes = []
         
@@ -62,10 +63,12 @@ class M5Compiler(HTMLParser):
             if tag == "script" and ((not 'type' in args) or args['type'] == "text/javascript") and self.app.inline_js(self.env):
                 if 'src' in args:
                     self.includes.append("<script src=\"%s\" />" % args['src'])
+                    self.suppressed_tags.append(tag)
                     return
             elif tag == "link" and args['rel'] == "stylesheet" and self.app.inline_css(self.env):
                 if 'href' in args:
                     self.includes.append("<link rel=\"stylesheet\" href=\"%s\" />" % args['href'])
+                    self.suppressed_tags.append(tag)
                     return
         if tag == "html" and self.app.run_offline(self.env):
             attrs.append(("manifest","cache.manifest"))
@@ -78,7 +81,7 @@ class M5Compiler(HTMLParser):
         #print "<< " + tag
         last = (len(self.tag_stack) > 0 and self.tag_stack.pop()) or None
         if (last != tag):
-            self.error("Hmm..unmatched tag, started %s but ended %s" % (last, tag))
+            self.error("Hmm..unmatched tag, started <%s> but ended <%s>" % (last, tag))
             
         if tag == "head" and len(self.includes) > 0:
             # Add inline style tag for gathered styles
@@ -118,9 +121,10 @@ class M5Compiler(HTMLParser):
                     self.buffer.write(script + "\n")
             self.buffer.write("</script>\n")
                     
-        if self.inside("head") and tag == "script" and self.app.inline_js(self.env):
-            return            
-        
+        if tag in self.suppressed_tags:
+            self.suppressed_tags.remove(tag)
+            return
+            
         self.buffer.write("</%s>" % tag)
 
     def handle_data(self, data):

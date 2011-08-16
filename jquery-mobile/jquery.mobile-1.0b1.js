@@ -300,6 +300,7 @@ $.widget( "mobile.widget", {
 * http://jquery.org/license
 */
 (function($, undefined ) {
+console.log("********** SETTING UP ORIENTATION STUFF");
 
 var $window = $(window),
 	$html = $( "html" ),
@@ -398,8 +399,10 @@ $(document).bind("mobileinit.htmlclass", function(){
 	to add classes to HTML element for min/max breakpoints and orientation */
 	var ev = $.support.orientation;
 	$window.bind("orientationchange.htmlclass throttledResize.htmlclass", function(event){
+	  console.log("JQM Orientation event");
 		//add orientation class to HTML element on flip/resize.
 		if(event.orientation){
+		  console.log("Changing html class");
 			$html.removeClass( "portrait landscape" ).addClass( event.orientation );
 		}
 		//add classes to HTML element for min/max breakpoints
@@ -414,6 +417,7 @@ $(document).bind("mobileinit.htmlclass", function(){
 */
 $(function(){
 	//trigger event manually
+	console.log("Triggering orientation event");
 	$window.trigger( "orientationchange.htmlclass" );
 });
 

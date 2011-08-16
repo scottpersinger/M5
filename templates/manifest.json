@@ -1,7 +1,7 @@
 {
-  "name": "%%NAME%%",
+  "name": "oscars",
   "version": "0.1",
-  "offline_envs": ["production"],
+  "offline_envs": [""],
   "simulator_envs": ["development"],
   "m5_version": "1.0"
 }

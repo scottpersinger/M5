@@ -8,6 +8,7 @@ import markdown
 import socket
 import threading
 import signal
+from threading import Timer
 
 import os.path
 import sys
@@ -42,7 +43,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
         
         
-def start_m5server(m5_root, environment="development", include_sim=False, port = 8000):
+def start_m5server(m5_root, environment="development", include_sim=False, port = 8000, callback=None):
     global M5_DIR, M5_LIB_DIR, JQTOUCH_DIR, M5_ENV, INCLUDE_SIM, JQM_DIR
     INCLUDE_SIM = include_sim
     M5_ENV = environment
@@ -56,6 +57,8 @@ def start_m5server(m5_root, environment="development", include_sim=False, port =
     print "Access the app from your phone using: http://" + socket.gethostname() + ":" + str(port) + \
       " (or http://" + s.getsockname()[0] + ":" + str(port) + ")"
     
+    if callback:
+      Timer(1.0, callback(port)).start()
     run(server='cherrypy', host='0.0.0.0', port=port,reloader=False,quiet=True)
 
 def start_tutorial(m5_root):
@@ -297,6 +300,7 @@ def any_path(path):
     global M5_LIB_DIR
     global JQTOUCH_DIR
     global JQM_DIR
+    global M5_ENV
     
     if re.search("\.m5\.html$", path):
         app = M5App("foo",".",index_path=path)
@@ -310,6 +314,9 @@ def any_path(path):
     last_parts = "/".join(path.split("/")[1:])
     last_path, fname = os.path.split(last_parts)
 
+    if M5_ENV == "development":
+        response.headers["Cache-Control"] = "no-cache"
+    
     if re.search("\.md$", path):
         return markitdown(path)
     elif re.match("^lib/m5/", path):
