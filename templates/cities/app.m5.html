@@ -19,7 +19,6 @@
             @require m5.boot, m5.env, m5.support
             @require m5.remote_console
             @require m5.simulator
-            @require scrollability
         -->
 
         <!-- application.js is a good place to put non-display app logic. -->
@@ -35,12 +34,11 @@
         <div >
             <!-- HOME PAGE -->
             <div id="home" data-role="page" data-theme="b">
-                <div data-role="header" class="bar top" style="position:absolute">
+                <div data-role="header">
                     <h1>Cities of the World</h1>
                     <a class="button ui-btn-right" href="#settings" data-transition="slideup">Settings</a>
                 </div>
-                <div id="container">
-                <ul id="cities" data-role="listview" data-inset="true" class="scrollable vertical" data-button-events="false" data-theme="d">
+                <ul id="cities" data-role="listview" data-inset="true" data-theme="d">
                   <li><a href="#details">
                     <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcQdWPgFQycWBCgH9ENTu18Dig5NtU5CwkM1ZoJmf1PCtMzdLll8" />
                     New York</a></li>
@@ -105,7 +103,6 @@
                         <img src="http://www.newspapers24.com/images/cities/moscow.jpg" />
                         Moscow</a></li>
                 </ul>
-                </div>
             </div>
             
             <div id="details" data-role="page" data-theme="b">
@@ -138,8 +135,8 @@
             main file. I prefer to put display-related logic inline next to the mark up.
             -->
         <script type="text/javascript">
-          // You can use M5.onTouchReady for code that needs to execute after jQTouch custom events are registered.
-          // This runs at document.ready, but after jQTouch is setup.
+          // You can use M5.onTouchReady for code that needs to execute after jQuery Mobile has initialized.
+          // You can run code on document.ready but your DOM will look quite different after jQM has initialized.
           
           M5.onTouchReady(function() {
             $('#cities li').live('mousedown', function() {

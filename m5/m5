@@ -5,15 +5,21 @@ import urllib2_file
 import urllib2
 import httplib
 import shutil
+import re
 import webbrowser
 from threading import Timer
 import tarfile
 
-from m5compiler import *
-import m5server
-from m5app import M5App
+from m5.compiler import *
+from m5.server import *
+from m5.app import M5App
 
-M5_DIR = os.path.join(os.path.dirname(__file__), "..")
+self_dir = os.path.dirname(__file__)
+if re.search('scripts$', self_dir):
+    M5_DIR = os.path.join(self_dir, "../../")
+else:
+    M5_DIR = os.path.join(self_dir, "..")
+print "M5 install dir: " + M5_DIR
 
 class PutRequest(urllib2.Request):
     def get_method(self):
@@ -41,7 +47,7 @@ def create_app(path,template=None):
         print "  -> " + path
         for f in glob.glob(os.path.join(M5_DIR, "templates", "*.js")):
             tf = open(os.path.join(path, os.path.basename(f)), "w")
-            tf.write(re.sub("%%NAME%%", app_name, manifest, open(f).read()))
+            tf.write(re.sub("%%NAME%%", app_name, open(f).read()))
             tf.close()
             # shutil.copyfile(f, os.path.join(path, os.path.basename(f)))
             # if re.search("m5\.env\.development\.js", f):
@@ -65,7 +71,7 @@ def run_server(example = False, launchsim = False, environment="development",ope
     if open_browser:
         callback = open_simulator
     
-    m5server.start_m5server(M5_DIR, environment=environment, include_sim=launchsim, port=port, callback=callback)
+    start_m5server(M5_DIR, environment=environment, include_sim=launchsim, port=port, callback=callback)
 
 def open_simulator(port = 8000):
     try:
@@ -79,8 +85,8 @@ def open_tutorial_browser():
 def run_tutorial_server(open_browser=True):
     print "Serving M5 tutorial pages..."
     if open_browser:
-        Timer(1.0, open_tutorial_browser).start()
-    m5server.start_tutorial(os.path.join(M5_DIR, "docs", "tutorial"))
+        Timer(2.5, open_tutorial_browser).start()
+    start_tutorial(os.path.join(M5_DIR, "docs", "tutorial"))
     
 def deploy_app(remote_addr):
     print "Deploying app..."
@@ -118,7 +124,8 @@ def build_app():
     shutil.copytree(".", "./build", ignore=shutil.ignore_patterns("*.pyc", "build/*","app.m5.html","\.DS_Store"))    
     name = "build/app.html"
     print "Building " + name + "... into build"
-    os.mkdir(os.path.join("build", "lib"))
+    if not os.path.exists(os.path.join("build", "lib")):
+        os.mkdir(os.path.join("build", "lib"))
     #shutil.copytree(os.path.join(M5_DIR, "jqtouch"), os.path.join("build", "lib", "jqtouch"))
     shutil.copytree(os.path.join(M5_DIR, "jquery-mobile"), os.path.join("build", "lib", "jquery-mobile"))
     shutil.copytree(os.path.join(M5_DIR, "lib"), os.path.join("build", "lib", "m5"))

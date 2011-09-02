@@ -1,0 +1,6 @@
+recursive-include templates *.html *.css *.js
+recursive-include docs *.*
+recursive-include lib *.*
+recursive-include jquery-mobile *.*
+include *.txt
+prune build

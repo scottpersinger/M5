@@ -1,13 +1,14 @@
 M5 Mobile Toolkit
 =========
 
-M5 attempts to make building mobile applications as easy as possible. The basic components
+M5 is designed to be a "batteries included" toolkit for building HTML5 mobile apps. The basic components
 of M5 include:
 
-* A basic mobile UI framework - currently jQuery plus jQTouch - for building your application UI
-* Javascript support modules for HTML5 features like local storage
+* A basic mobile UI framework - currently jQuery Mobile ('jQM') - for building your application UI
 * Browser-based simulator which allows you to test and refine your app easily on the desktop
-* A free cloud service with API endpoints that make it possible to build "server-less" apps
+* Javascript support modules for HTML5 features like local storage
+* Package management that makes it easy to include additional Javascript libraries
+* A free cloud service for hosting your app
     
 Creating your app
 -------------------
@@ -20,7 +21,7 @@ This creates a skeleton for your new app called 'testapp'. Now cd into 'testapp'
         m5 server --simulator
 
 This starts the local web server, serving your new app, and opens a browser window to your app.
-You see your app running in the "simulator". This is really just an image of a phone with your
+You will see your app running in the "simulator". This is really just an image of a phone with your
 app frame centered inside. (See more info on [the m5 command](m5_command.md) or [the simulator](sim_console.md).)
 
 However, you also see on the right side the simulator console. We'll get to this in a minute.
@@ -33,49 +34,54 @@ The skeleton app has a few components:
 
 It's a good idea to walk through the code of the skeleton app to see how things work. You
 can do that right here. Just click on the 'Editor' tab in the simulator console. This
-will show you a list of files that make up the app. Click the file *app.html*. 
+will show you a list of files that make up the app. Click the file *app.m5.html*. 
 (See [the simulator](sim_console.md) for more on the simulator).
 
-Now you can see the source code for the app. The HTML and JS for the app is all contained 
+Now you can see the source code for the app. The HTML for all screens of the app is contained 
 entirely in this one file. The basic HTML structure for the app looks like this:
-
-        <div id="jqt">
-            <div id="page1">
-                ...
-            </div>
-            <div id="page2">
-                ...
-            </div>
-            ... more pages ...
+        <div id="page1" data-role="page">
+            <div data-role="header"><h1>Home</h1></div>
+            ...content
         </div>
+        <div id="page2" data-role="page">
+        </div>
+        ... more pages ...
         
-M5 apps are known as "single page apps". This means that *all* the HTML that draws all the pages
-for the app is contained in a single file. The [jQTouch](http://jqtouch.com/) library specifies
-the basic page structure. A top level div with the id 'jqt', and each child div specifies a different
-page in the app. At any given time, only one of the page divs is visible, and it takes up the entire
-screen of the phone. You setup buttons or lists or JS handlers to switch from one page to another.
+M5 apps are known as "single page apps". In practice this means that the HTML markup for the app's
+pages are contained in the home page, and updates to the app are sent as data over Ajax, then displayed
+using Javascript. This is in contrast to typical desktop-browser web apps that generate their pages dynamically 
+on the server. Each page is indicated by a div with the special attribute _data-role="page"_. This markup
+is specified by the jQuery Mobile framework. At any given time, only one _page_ div is visible, and it
+takes up the entire browser viewport. jQuery Mobile includes support for transitioning between pages
+trigged by either the user pressing on a link, or via Javascript calls.
 
 (For more info, see [A note on the M5 app philosophy](philosophy.md))
 
 -------------------------------
 Let's look at the rest of our template app. The first page div looks like this:
 
-    <div id="home" class="current">
-        <div class="toolbar">
-            <h1>Cities of the World</h1>
-            <a class="button flip" id="infoButton" href="#settings">Settings</a>
+        <div id="home" data-role="page" data-theme="b">
+            <div data-role="header">
+                <h1>Cities of the World</h1>
+                <a class="button ui-btn-right" href="#settings" data-transition="slideup">Settings</a>
+            </div>
+            <div id="container">
+            <ul id="cities" data-role="listview" data-inset="true" data-theme="d">
+              <li><a href="#details">
+                <img src="http://t0.gstatic.com/images?q=tbn:ANd9GcQdWPgFQycWBCgH9ENTu18Dig5NtU5CwkM1ZoJmf1PCtMzdLll8" />
+                New York</a></li>
+                ...
+            </ul>
         </div>
-        ...
-        
-This defines a page in our app identified by "home". We can make any link or button activate
-this page by using the anchor "#home". The "current" class on the div tells jQTouch to
-show this div as the first page when our app is loaded. Inside the div, we have defined a 
-navigation bar via the "toolbar" class, and inside we've put a label on the nav bar, and
+                    
+This defines a page in our app identified by the name "home". We can make any link or button activate
+this page by using the href "#home". Inside the div, we have defined a 
+navigation bar via the _data-role="header_ attribute, and inside we've put a label on the nav bar, and
 defined a link with the text "Settings". The "button" class will give our link the appearance
-of a button, and the "#settings" href tells jQTouch to activate the div with the id "settings"
-when the link is pressed. One of the cool features of JQTouch is that it includes a number of
-animated page transitions that use CSS animations. We have used the class "flip" on the 
-link, which tells jQTouch to use the "flip" animation when showing the settings page. Try
+of a button, and the "#settings" href tells jQM to activate the div with the id "settings"
+when the link is pressed. One of the cool features of jQM is that it includes a number of
+animated page transitions that use CSS animations. We have used the class "slideup" on the 
+link, which tells jQM to use the "slideup" animation when showing the settings page. Try
 clicking "Settings" in the app to see it in action.
 
 ## Page transition events
@@ -88,8 +94,10 @@ of cities. You'll notice that each list item contains a single link:
 Each link points to the same page, the 'details' div. But when you click the city, the details
 page shows a description specific to each city.
 
-This stuff works by virtue of a "page event". Scroll down to the Javascript block at the bottom
-of app.html which looks like this:
+Scroll down to the Javascript block at the bottom of app.m5.html and you will see a _mousedown_
+event handler added to _li_ elements in the cities list.
+
+This stuff works by virtue of a "page event".  which looks like this:
 
         $('#details').bind('pageAnimationStart', function() {
           var tappedElt = $(this).data('referrer');

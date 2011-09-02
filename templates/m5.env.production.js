@@ -10,3 +10,4 @@
   will include m5.env.<environment>.js automatically.
   
 */
+M5.settings.app_name = '%%NAME%%'

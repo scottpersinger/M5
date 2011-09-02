@@ -18,5 +18,4 @@ $(function() {
   }
 });
 
-M5.settings.app_name = 'cities'
-M5.settings.app_name = 'oscars'
+M5.settings.app_name = '%%NAME%%'

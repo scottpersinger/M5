@@ -5,7 +5,7 @@ import os
 import pdb
 from slimit import minify
 
-from m5app import M5App
+from app import M5App
 
 #pdb.set_trace()
 
@@ -27,7 +27,7 @@ class M5Compiler(HTMLParser):
         'iscroll' : "lib/m5/iscroll-lite.js",
         'jqt.bars' : ['lib/jqtouch/extensions/jqt.bars/jqt.bars.js', 'lib/jqtouch/extensions/jqt.bars/jqt.bars.css'],
         'jqt.offline' : 'lib/jqtouch/extensions/jqt.offline.js',
-        'scrollability': ["lib/scrollability.css", "lib/scrollability.js"],
+        'scrollability': ["lib/scrollability.css", "lib/scottp-scrollability/scrollability.js"],
         'm5.simulator': ['lib/m5/m5.simulator.js']
     }
 

@@ -17,8 +17,8 @@ import json
 import glob
 import random
 
-from m5compiler import *
-from m5app import M5App
+from compiler import *
+from app import M5App
 
 # A special purpose web server for serving M5 apps locally. Basically it's just serving
 # files. But with these special features:
@@ -52,13 +52,15 @@ def start_m5server(m5_root, environment="development", include_sim=False, port =
     JQTOUCH_DIR = os.path.join(M5_DIR, "jqtouch")
     JQM_DIR = os.path.join(M5_DIR, "jquery-mobile")
     debug(False)
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("google.com",80))
-    print "Access the app from your phone using: http://" + socket.gethostname() + ":" + str(port) + \
-      " (or http://" + s.getsockname()[0] + ":" + str(port) + ")"
-    
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("google.com",80))
+        print "Access the app from your phone using: http://" + socket.gethostname() + ":" + str(port) + \
+          " (or http://" + s.getsockname()[0] + ":" + str(port) + ")"
+    except:
+        pass
     if callback:
-      Timer(1.0, callback(port)).start()
+      Timer(2.5, callback(port)).start()
     run(server='cherrypy', host='0.0.0.0', port=port,reloader=False,quiet=True)
 
 def start_tutorial(m5_root):
@@ -316,6 +318,7 @@ def any_path(path):
 
     if M5_ENV == "development":
         response.headers["Cache-Control"] = "no-cache"
+        response.headers["Expires"] = "0"
     
     if re.search("\.md$", path):
         return markitdown(path)
