@@ -11,7 +11,7 @@ def gen_data_files(*dirs):
     
 setup(
     name = "M5",
-    version = "0.3.1",
+    version = "0.3.2",
     # metadata for upload to PyPI
     author = "Scott Persinger",
     author_email = "scottpersinger@gmail.com",
