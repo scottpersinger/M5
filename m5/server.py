@@ -17,6 +17,11 @@ import json
 import glob
 import random
 
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 from compiler import *
 from app import M5App
 

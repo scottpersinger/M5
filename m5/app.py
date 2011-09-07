@@ -4,7 +4,12 @@ import json
 import pdb
 from StringIO import StringIO
 import re
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
+       
 class M5App:
     def __init__(self,name,root_dir,container=None,index_path=None):
         self.name = name;

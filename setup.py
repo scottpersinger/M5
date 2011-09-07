@@ -22,7 +22,7 @@ setup(
     packages = ['m5'],
     scripts = ['m5/m5'],
     
-    install_requires = ['slimit>=0.5.3','bottle>=0.9.5','cherrypy'],
+    install_requires = ['slimit>=0.5.3','bottle>=0.9.5','cherrypy','urllib2-file','Markdown'],
 
     data_files = gen_data_files("docs", "lib", "jquery-mobile", "templates"),
 

@@ -1,14 +1,18 @@
 M5 Mobile Toolkit
 =========
 
-M5 is designed to be a "batteries included" toolkit for building HTML5 mobile apps. The basic components
-of M5 include:
+M5 is designed to be a "batteries included" toolkit for building HTML5 mobile apps. There exist
+many frameworks for creating mobile apps in HTML, so M5 attempts to help out with all the other
+steps required to build an app:
 
-* A basic mobile UI framework - currently jQuery Mobile ('jQM') - for building your application UI
-* Browser-based simulator which allows you to test and refine your app easily on the desktop
-* Javascript support modules for HTML5 features like local storage
-* Package management that makes it easy to include additional Javascript libraries
-* A free cloud service for hosting your app
+* Getting started. M5 comes with a number of examples apps and documentation to help get you started.
+* Development. The bundled web server is great for local development and testing.
+* Debugging. The M5 "simulator" makes it easy to see how your app will look on a real device,
+while letting you use your desktop browser's Javascript tools for debugging. 
+* Deployment. M5 can "build" your project to automatically remove debugging code and generate
+files ready for hosting. You can even deploy your app for free to the m5apps.org web site.
+
+You can read about the [M5 background](background.md) for some more backstory.
     
 Creating your app
 -------------------
